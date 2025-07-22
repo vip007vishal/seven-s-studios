@@ -1,0 +1,3159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEVEN'S STUDIOS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Favicon for all modern browsers -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- Apple Touch Icon (iPhones, iPads) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/ati.png">
+
+    <!-- Android/Chrome -->
+    <link rel="icon" type="image/png" sizes="192x192" href="c192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="c512.png">
+
+    <!-- Regular PNG favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="f16.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="f32.png">
+
+    <!-- Web App Manifest (for Android PWA support) -->
+    <link rel="manifest" href="/site.webmanifest">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
+    <style>
+        :root {
+            --primary: #8a4fff;
+            --primary-dark: #6b2beb;
+            --secondary: #ff4f9a;
+            --accent: #00e6cc;
+            --dark: #0f0c1d;
+            --darker: #090714;
+            --light: #f0f0ff;
+            --gray: #a0a0c0;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            --glow: 0 0 15px rgba(138, 79, 255, 0.5);
+            --glass: rgba(25, 22, 46, 0.6);
+            --cosmic-blue: #0c0b1d;
+            --nebula-purple: #3a1ca8;
+            --star-yellow: #ffcc00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--cosmic-blue) 0%, #1a1a2e 50%, var(--cosmic-blue) 100%);
+            color: var(--light);
+            line-height: 1.7;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(25, 25, 112, 0.2) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(75, 0, 130, 0.2) 0px, transparent 50%);
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(85, 0, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 0, 111, 0.05) 0%, transparent 20%),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="black"/><circle cx="10" cy="20" r="0.5" fill="white" opacity="0.6"/><circle cx="15" cy="50" r="0.5" fill="white" opacity="0.6"/><circle cx="20" cy="30" r="0.3" fill="white" opacity="0.6"/><circle cx="30" cy="70" r="0.2" fill="white" opacity="0.6"/><circle cx="80" cy="40" r="0.4" fill="white" opacity="0.6"/><circle cx="85" cy="60" r="0.3" fill="white" opacity="0.6"/><circle cx="90" cy="20" r="0.6" fill="white" opacity="0.6"/></svg>');
+            background-size: cover;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            line-height: 1.2;
+            background: linear-gradient(90deg, var(--light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            z-index: -1;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glow);
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--light);
+        }
+
+        /* Particles Background */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        /* Header & Navigation */
+        header {
+            background: rgba(15, 12, 29, 0.8);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(138, 79, 255, 0.1);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 26px;
+            font-weight: 700;
+            text-decoration: none;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .mobile-toggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--light);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 250px 0 120px;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            line-height: 1.1;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            animation: fadeInUp 1s ease 0.2s forwards;
+            opacity: 0;
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            animation: fadeInUp 1s ease 0.4s forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 3D Hero Scene */
+        #hero-3d {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Services Section */
+        .section {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-title h2 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 2px;
+        }
+
+        .section-title p {
+            max-width: 700px;
+            margin: 30px auto 0;
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2%;
+        }
+
+        .service-card {
+            background: var(--glass);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(138, 79, 255, 0.1);
+            transform: translateY(0);
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary), transparent, var(--accent));
+            z-index: -1;
+            border-radius: 22px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .service-card:hover {
+            transform: translateY(-15px);
+            box-shadow: var(--glow);
+        }
+
+        .service-card:hover::before {
+            opacity: 1;
+        }
+
+        .service-icon {
+            width: 90px;
+            height: 90px;
+            background: rgba(138, 79, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            font-size: 36px;
+            color: var(--accent);
+            transition: var(--transition);
+            border: 2px solid rgba(138, 79, 255, 0.2);
+        }
+
+        .service-card:hover .service-icon {
+            transform: scale(1.1);
+            background: rgba(138, 79, 255, 0.2);
+            box-shadow: 0 0 20px rgba(138, 79, 255, 0.3);
+        }
+
+        .service-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .service-card p {
+            color: var(--gray);
+            margin-bottom: 30px;
+            min-height: 80px;
+        }
+
+        .service-card .btn {
+            background: transparent;
+            border: 2px solid var(--primary);
+            padding: 10px 25px;
+        }
+
+        .service-card .btn:hover {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+
+        /* Service Details Popup */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3000;
+            overflow-y: auto;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 12, 29, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-container {
+            position: relative;
+            max-width: 800px;
+            margin: 80px auto;
+            background: var(--glass);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(138, 79, 255, 0.2);
+            z-index: 2;
+            backdrop-filter: blur(20px);
+            transform: translateY(-20px);
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
+        }
+
+                /* Enhance service modal 3D container */
+        .modal-3d-container {
+            height: 300px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: rgba(15, 12, 29, 0.3);
+            border: 1px solid rgba(138, 79, 255, 0.2);
+            margin: 20px 0;
+        }
+
+        .modal-container.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-title {
+            font-size: 2.2rem;
+            background: linear-gradient(90deg, var(--light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: rgba(138, 79, 255, 0.2);
+            color: var(--accent);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 15px;
+        }
+
+        .modal-service-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(138, 79, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+            color: var(--accent);
+            border: 2px solid rgba(138, 79, 255, 0.2);
+        }
+
+        .modal-content h4 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1.4rem;
+            margin: 25px 0 15px;
+            color: var(--accent);
+            background: none;
+            -webkit-text-fill-color: var(--accent);
+        }
+
+        .modal-content p, .modal-content ul {
+            margin-bottom: 20px;
+            color: var(--gray);
+        }
+
+        .modal-content ul {
+            padding-left: 30px;
+        }
+
+        .modal-content li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .modal-content li:before {
+            content: "•";
+            color: var(--primary);
+            position: absolute;
+            left: 0;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        /* 3D Modal Container */
+        .modal-3d-container {
+            width: 100%;
+            height: 300px;
+            margin: 20px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            background: rgba(15, 12, 29, 0.3);
+            border: 1px solid rgba(138, 79, 255, 0.2);
+        }
+
+        /* Scrollbar styling */
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: rgba(138, 79, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        /*comp-vid*/
+        .comp-vid{
+            position: relative;
+            width: 100%;
+            height: 140%;
+            left: 0%;
+            background-color: #0b00337c;
+            backdrop-filter: blur(10px);
+        }
+
+        .comp-vid video{
+            position: absolute;
+            top: 20%;
+            width: 80%;
+            height: auto;
+            left: 10%;
+        }
+
+        @media (max-width: 480px){
+            .comp-vid{
+            }
+            
+        }
+
+
+
+        /* Features Section */
+        .features {
+            position: relative;
+        }
+
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(138, 79, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 79, 154, 0.05) 0%, transparent 40%);
+            z-index: -1;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--glass);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            padding: 40px 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(138, 79, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--glow);
+            border-color: rgba(138, 79, 255, 0.3);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(138, 79, 255, 0.1);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            font-size: 30px;
+            color: var(--accent);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: rotate(10deg) scale(1.1);
+            background: rgba(138, 79, 255, 0.2);
+        }
+
+        .feature-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card p {
+            color: var(--gray);
+        }
+
+        /* Stats Section */
+        .stats {
+            background: rgba(15, 12, 29, 0.6);
+            padding: 70px 0;
+            border-top: 1px solid rgba(138, 79, 255, 0.1);
+            border-bottom: 1px solid rgba(138, 79, 255, 0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0px;
+            text-align: center;
+        }
+
+        .stat-card {
+            padding: 30px;
+        }
+
+        .stat-card img{
+            width: 70%;
+            height: auto;
+        }
+
+        .stat-card h3 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .testimonial-slider {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .testimonial {
+            background: var(--glass);
+            border-radius: 25px;
+            box-shadow: var(--shadow);
+            padding: 50px;
+            text-align: center;
+            display: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(138, 79, 255, 0.1);
+        }
+
+        .testimonial.active {
+            display: block;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .testimonial-content {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--light);
+            margin-bottom: 40px;
+            position: relative;
+            line-height: 1.8;
+        }
+
+        .testimonial-content::before,
+        .testimonial-content::after {
+            content: '"';
+            font-size: 5rem;
+            color: var(--primary);
+            opacity: 0.2;
+            position: absolute;
+            font-family: serif;
+            line-height: 1;
+        }
+
+        .testimonial-content::before {
+            top: -30px;
+            left: -20px;
+        }
+
+        .testimonial-content::after {
+            bottom: -70px;
+            right: -20px;
+        }
+
+        .client-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .client-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 20px;
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 15px rgba(138, 79, 255, 0.3);
+        }
+
+        .client-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .client-details h4 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .client-details p {
+            color: var(--accent);
+            font-size: 1rem;
+            text-align: left;
+        }
+
+        .testimonial-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+            gap: 15px;
+        }
+
+        .testimonial-nav button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--glass);
+            border: 1px solid rgba(138, 79, 255, 0.2);
+            color: var(--light);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .testimonial-nav button:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 100px 0;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(138, 79, 255, 0.05) 0%, transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(255, 79, 154, 0.05) 0%, transparent 30%);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 50px;
+        }
+
+        .contact-info h3 {
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+        }
+
+        .contact-detail {
+            display: flex;
+            margin-bottom: 25px;
+            align-items: flex-start;
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(138, 79, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            color: var(--accent);
+            font-size: 20px;
+        }
+
+        .contact-text h4 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .contact-text p, .contact-text a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .contact-text a:hover {
+            color: var(--accent);
+        }
+
+        .contact-container {
+            background: rgba(12, 11, 29, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(31, 6, 118, 0.3);
+            overflow: hidden;
+            max-width: 500px;
+            width: 100%;
+            padding: 40px 30px;
+            position: relative;
+            border: 1px solid rgba(58, 28, 168, 0.3);
+        }
+        
+        .contact-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(58, 28, 168, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+        
+        .contact-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .contact-header h2 {
+            color: #f0f0ff;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #a0a0c0, #f0f0ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .contact-header p {
+            color: #7b7b7b;
+            font-size: 16px;
+        }
+
+        .notification {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1f0676;
+            color: #f0f0ff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            z-index: 9999;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: opacity 0.3s ease;
+        }
+
+        .notification i {
+            margin-right: 8px;
+        }
+
+        .notification.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .notification.error {
+            background-color: #a83232;
+            color: #fff;
+        }
+        .form-group-s {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .form-control-s {
+            font-family: 'Poppins', 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            background-color: rgba(20, 2, 50, 0.3);
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(58, 28, 168, 0.4);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            color: #f0f0ff;
+            outline: none;
+        }
+        
+        .form-control-s::placeholder {
+            color: #7b7b7b;
+            opacity: 0.8;
+        }
+        
+        .form-control-s:focus {
+            border-color: #3a1ca8;
+            box-shadow: 0 0 0 4px rgba(58, 28, 168, 0.2);
+        }
+        
+        .form-group-s i {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7b7b7b;
+            font-size: 18px;
+        }
+        
+        .form-control-s option {
+            font-family: 'Poppins', 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            background: transparent;
+            background-color: transparent;
+            padding: 10px;
+        }
+        
+        #reason {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-color: transparent;
+            color: #7b7b7b;
+            cursor: pointer;
+        }
+        
+        
+        textarea.form-control-s {
+            height: 120px;
+            resize: vertical;
+            padding-top: 15px;
+        }
+        
+        .btns {
+            font-family: 'Poppins', 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(31, 6, 118, 0.3) 0%, rgba(20, 2, 50, 0.5) 100%);
+            color: #a0a0c0;
+            border: 2px solid #3a1ca8;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btns::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(135deg, #1f0676 0%, #3a1ca8 100%);
+            transition: all 0.4s ease;
+            z-index: -1;
+        }
+        
+        .btns:hover {
+            color: #f0f0ff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(31, 6, 118, 0.4);
+        }
+        
+        .btns:hover::before {
+            width: 100%;
+        }
+        
+        .btns:active {
+            transform: translateY(0);
+        }
+        
+        .btns i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .form-group-s:hover .form-control-s {
+            border-color: #3a1ca8;
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #7b7b7b;
+            font-size: 14px;
+        }
+        
+        .form-footer a {
+            color: #a0a0c0;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .form-footer a:hover {
+            color: #f0f0ff;
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 480px) {
+            .contact-container {
+                padding: 30px 20px;
+            }
+            
+            .contact-header h2 {
+                font-size: 24px;
+            }
+            
+            .form-control-s {
+                padding: 14px 18px;
+            }
+        }
+
+        .custom-select-wrapper {
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            user-select: none;
+            width: 100%;
+            margin-bottom: 25px;
+        }
+
+        .custom-select-trigger {
+            font-family: 'Poppins', sans-serif;
+            background: transparent;
+            background-color: rgba(20, 2, 50, 0.3);
+            border: 2px solid rgba(58, 28, 168, 0.4);
+            padding: 16px 20px;
+            font-size: 1rem;
+            border-radius: 12px;
+            color: #676767;
+            cursor: pointer;
+        }
+
+        .custom-select-trigger:hover{
+            border-color: #3a1ca8;
+        }
+        .custom-options {
+            font-family: 'Poppins', sans-serif;
+            position: absolute;
+            top: 110%;
+            left: 0%;
+            right: 0%;
+            width: 100%;
+            background: rgba(20, 2, 50, 0.4);
+            border: 2px solid rgba(58, 28, 168, 0.4);
+            border-radius: 12px;
+            font-size: 1rem;
+            color: #a0a0c0;
+            z-index: 999;
+            display: none;
+            backdrop-filter: blur(5px);
+
+            /* 🚫 Remove scrolling */
+            max-height: none;
+            overflow: visible;
+        }
+
+        .custom-option {
+            padding: 8px 16px;
+            cursor: pointer;
+            color: #f0f0ff;
+            transition: background 0.3s;
+        }
+
+        .custom-option {
+            line-height: 1.2; /* optional */
+        }
+
+        .custom-option {
+            display: block; /* ⬅️ This stacks them vertically */
+            padding: 12px 20px;
+            cursor: pointer;
+            color: #f0f0ff;
+            transition: background 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .custom-option:hover {
+            background: rgba(58, 28, 168, 0.3);
+            border-radius: 11px;
+            border-color: #3a1ca8;
+        }
+
+
+        .custom-select-trigger.selected {
+            color: #f0f0ff; /* ✅ Actual color after selection */
+        }
+
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 0.85rem;
+            background-color: #f8f8f8;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .info {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+        }
+
+
+
+
+                /* Portfolio Showcase */
+        .portfolio-showcase {
+            padding: 80px 0;
+            background: rgba(15, 12, 29, 0.6);
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .portfolio-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            height: 300px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .portfolio-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(15, 12, 29, 0.9), transparent);
+            padding: 30px 20px 20px;
+            transform: translateY(50px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .portfolio-item:hover .portfolio-overlay {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .portfolio-overlay h4 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .portfolio-overlay p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* 3D Portfolio Elements */
+        .portfolio-3d-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .portfolio-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+            color: white;
+            background: rgba(15, 12, 29, 0.5);
+        }
+
+        /* 3D Footer Element */
+
+
+        /* Footer */
+        footer {
+            background: rgba(9, 7, 20, 0.9);
+            padding: 80px 0 30px;
+            border-top: 1px solid rgba(138, 79, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-column h3 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .footer-column img{
+            top: 20%;
+            width: 50%;
+            height: auto;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-links a i {
+            margin-right: 10px;
+            color: var(--accent);
+            font-size: 12px;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: rgba(138, 79, 255, 0.1);
+            border-radius: 12px;
+            color: var(--accent);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 18px;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(138, 79, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+            .modal-container {
+                width: 90%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: rgba(15, 12, 29, 0.95);
+                flex-direction: column;
+                align-items: center;
+                padding: 30px 0;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                transform: translateY(-150%);
+                transition: var(--transition);
+                backdrop-filter: blur(10px);
+            }
+            
+            .nav-links.active {
+                transform: translateY(0);
+            }
+            
+            .nav-links li {
+                margin: 15px 0;
+            }
+            
+            .hero {
+                padding: 150px 0 80px;
+            }
+            
+            .section {
+                padding: 80px 0;
+            }
+            
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1%;
+            }
+            
+            .modal-container {
+                padding: 30px 20px;
+                margin: 5% auto;
+            }
+            
+            .modal-title {
+                font-size: 1.8rem;
+            }
+            
+            .modal-body {
+                max-height: 60vh;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            /* Hide 3D on mobile for performance */
+            #hero-3d, #footer-3d {
+                display: none;
+            }
+        }
+        
+        /* Cosmic Effects */
+        .cosmic-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .galaxy-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .cosmic-title {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .cosmic-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 2px;
+            animation: cosmicGlow 3s infinite alternate;
+        }
+        
+        @keyframes cosmicGlow {
+            0% {
+                box-shadow: 0 0 5px var(--primary);
+            }
+            100% {
+                box-shadow: 0 0 20px var(--accent);
+            }
+        }
+        
+        .black-hole {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #000000 30%, transparent 70%), 
+                        radial-gradient(circle, #8a4fff 10%, transparent 40%);
+            filter: blur(10px);
+            animation: rotateBlackHole 30s infinite linear;
+            z-index: -1;
+            opacity: 0.2;
+        }
+        
+        @keyframes rotateBlackHole {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .star {
+            position: absolute;
+            background: rgb(255, 255, 255);
+            border-radius: 50%;
+            animation: twinkle 3s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        .cosmic-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+    </style>
+</head>
+<body>
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+
+    <!-- Cosmic Background Elements -->
+    <div class="cosmic-overlay">
+        <div class="black-hole" style="top: 30%; left: 20%;"></div>
+        <div class="black-hole" style="top: 70%; left: 80%; transform: scale(0.7);"></div>
+    </div>
+
+    <!-- 3D Hero Background -->
+    <div id="hero-3d"></div>
+
+    <!-- Header & Navigation -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#home" class="logo"><!--
+                    <i class="fas fa-infinity"></i>-->
+                    SEVEN'S
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#portfolio">Portfolio</a></li>
+                    <!--<li><a href="#features-of-sevens">Features</a></li>-->
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <div class="mobile-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="cosmic-title">Transform Ideas into Cosmic Masterpieces</h1>
+                <p>We blend creativity with cosmic technology to craft stellar digital experiences that captivate audiences and elevate brands.</p>
+                <div class="hero-buttons">
+                    <a href="#services" class="btn">Explore Services</a>
+                    <a href="#contact" class="btn btn-secondary">Schedule Consultation</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="section" id="services">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="cosmic-title">Our Cosmic Services</h2>
+                <p>Intergalactic digital solutions crafted to bring your vision to life</p>
+            </div>
+            <div class="services-grid">
+                <!-- Graphic Design Service -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3>Galaxy Design</h3>
+                    <p>Stellar visual identities, branding, and marketing materials</p>
+                    <div class="service-learn-more">
+                        <a href="#" class="btn learn-more-btn" data-service="graphic-design">Learn More</a>
+                    </div>
+                </div>
+                
+                <!-- App Development Service -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Cosmic App Dev</h3>
+                    <p>Intuitive mobile applications for iOS and Android platforms</p>
+                    <div class="service-learn-more">
+                        <a href="#" class="btn learn-more-btn" data-service="app-development">Learn More</a>
+                    </div>
+                </div>
+                
+                <!-- Web Development Service -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3>Interstellar Web</h3>
+                    <p>Responsive websites with cutting-edge design and functionality</p>
+                    <div class="service-learn-more">
+                        <a href="#" class="btn learn-more-btn" data-service="web-development">Learn More</a>
+                    </div>
+                </div>
+                
+                <!-- Video Editing Service -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h3>Universal Video</h3>
+                    <p>Professional editing for commercials, social media, and films</p>
+                    <div class="service-learn-more">
+                        <a href="#" class="btn learn-more-btn" data-service="video-editing">Learn More</a>
+                    </div>
+                </div>
+                
+                <!-- VFX Graphics Service -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <h3>Nebula VFX</h3>
+                    <p>Visual effects that transform ordinary footage into extraordinary</p>
+                    <div class="service-learn-more">
+                        <a href="#" class="btn learn-more-btn" data-service="vfx-graphics">Learn More</a>
+                    </div>
+                </div>
+                
+                <!-- 3D Animation Service -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <h3>Universe Animation</h3>
+                    <p>Immersive animations for product visualization and storytelling</p>
+                    <div class="service-learn-more">
+                        <a href="#" class="btn learn-more-btn" data-service="3d-animation">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Showcase -->
+    <section class="portfolio-showcase" id="portfolio">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="cosmic-title">Cosmic Portfolio</h2>
+                <p>Showcasing our stellar digital solutions and creative expertise</p>
+            </div>
+            <div class="portfolio-grid">
+                <div class="portfolio-item">
+                    <div class="portfolio-3d-container" id="portfolio-3d-1"></div>
+                    <div class="portfolio-content">
+                        <h4>Galaxy Identity Design</h4>
+                        <p>Complete visual identity for space tech startup</p>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <div class="portfolio-3d-container" id="portfolio-3d-2"></div>
+                    <div class="portfolio-content">
+                        <h4>Cosmic App Design</h4>
+                        <p>Astronomy tracking application UI/UX</p>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <div class="portfolio-3d-container" id="portfolio-3d-3"></div>
+                    <div class="portfolio-content">
+                        <h4>Interstellar Website</h4>
+                        <p>Premium cosmic experience development</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </section>
+
+    <!-- Service Details Modal -->
+    <div class="modal" id="service-modal">
+        <div class="modal-overlay" id="modal-overlay"></div>
+        <div class="modal-container" id="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Service Details</h3>
+                <button class="modal-close" id="modal-close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-3d-container" id="modal-3d"></div>
+                <div id="modal-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <section class="section features" id="features-of-sevens">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="cosmic-title">Why Choose SEVEN'S</h2>
+                <p>The stellar experience that sets us apart from the competition</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>Cosmic Creativity</h3>
+                    <p>We constantly explore innovative approaches to deliver cutting-edge creative solutions for your business.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3>Stellar Quality</h3>
+                    <p>Every project undergoes rigorous quality control to ensure excellence in every detail and pixel-perfect execution.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h3>Universal Methodology</h3>
+                    <p>Our flexible process adapts to your needs, delivering results faster without compromising quality.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Interstellar Security</h3>
+                    <p>We implement enterprise-grade security protocols to protect your data and digital assets.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>Galactic Support</h3>
+                    <p>Our team provides ongoing support and maintenance to ensure your solutions perform optimally.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Data-Driven Insights</h3>
+                    <p>We leverage analytics to inform creative decisions and continuously optimize your digital presence.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <img src="SEVEN.png">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="comp-vid">
+        <video src="main.mp4" autoplay muted loop style="width: 95%; height: auto; z-index: 100; position: relative; left: 2.5%;"></video>
+    </div>
+
+    <!-- Testimonials -->
+    <section class="section testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="cosmic-title">Client Experiences</h2>
+                <p>What industry leaders say about our cosmic services</p>
+            </div>
+            <div class="testimonial-slider">
+                <div class="testimonial active">
+                    <div class="testimonial-content">
+                        <p>SEVEN'S transformed our digital presence with their innovative cosmic approach. The team's attention to detail and commitment to excellence resulted in a solution that not only met but exceeded our expectations. Their ability to blend aesthetics with functionality is unparalleled.</p>
+                    </div>
+                    <div class="client-info">
+                        <div class="client-avatar">
+                            <img src="p.png" alt="Sarah Johnson">
+                        </div>
+                        <div class="client-details">
+                            <h4>Sarah Johnson</h4>
+                            <!--<p>Creative Director, TechVision</p>-->
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <p>Working with SEVEN'S was a game-changer for our brand. Their cosmic insights and technical expertise elevated our market position significantly. The mobile application they developed has seen a 70% increase in user engagement since launch.</p>
+                    </div>
+                    <div class="client-info">
+                        <div class="client-avatar">
+                            <img src="p.png" alt="Michael Chen">
+                        </div>
+                        <div class="client-details">
+                            <h4>Michael Chen</h4>
+                            <!--<p>CEO, FutureLabs</p>-->
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <p>The animation work created by SEVEN'S has provided us with stunning visual assets that perfectly capture our brand identity. Their creative team demonstrated deep expertise and delivered a robust solution that has enhanced our marketing campaigns.</p>
+                    </div>
+                    <div class="client-info">
+                        <div class="client-avatar">
+                            <img src="p.png" alt="Emily Rodriguez">
+                        </div>
+                        <div class="client-details">
+                            <h4>Emily Rodriguez</h4>
+                            <!--<p>Marketing Director, Visionary Media</p>-->
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-nav">
+                    <button><i class="fas fa-arrow-left"></i></button>
+                    <button><i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section contact" id="contact">
+        <div class="container">
+            <div class="section-title">
+                <h2 class="cosmic-title">Connect With Us</h2>
+                <p>Begin your journey toward stellar creative experiences</p>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h3>Get In Touch</h3>
+                    <div class="contact-detail">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-text">
+                            <h4>Location</h4>
+                            <p>Near perumal kovil, South mada street, Madurai-625001</p>
+                        </div>
+                    </div>
+                    <div class="contact-detail">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div class="contact-text">
+                            <h4>Phone</h4>
+                            <p>+91 93443 04597</p>
+                        </div>
+                    </div>
+                    <div class="contact-detail">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-text">
+                            <h4>Email</h4>
+                            <p><a href="mailto:contact@SEVEN'S.example">vishal15v2006@gmail.com</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-detail">
+                        <div class="contact-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="contact-text">
+                            <h4>Hours</h4>
+                            <p>Monday-Friday: 9AM - 6PM</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                <form id="whatsappForm">
+                    <div id="notification" class="notification"></div>
+                    <div class="form-group-s">
+                        <input type="text" placeholder="Your Name" class="form-control-s" id="name">
+                    </div>
+                    
+                    <div class="form-group-s">
+                        <input type="tel" placeholder="Mobile Number (with country code)" class="form-control-s" id="phone">
+                    </div>
+                    
+                    <div class="custom-select-wrapper">
+                        <div class="custom-select-trigger">Reason for Contact</div>
+                        <div class="custom-options">
+                            <span class="custom-option" data-value="Graphic designing">Graphic designing</span>
+                            <span class="custom-option" data-value="App development">App development</span>
+                            <span class="custom-option" data-value="Web development">Web development</span>
+                            <span class="custom-option" data-value="Video editing">Video editing</span>
+                            <span class="custom-option" data-value="VFX">VFX</span>
+                            <span class="custom-option" data-value="Animation">Animation</span>
+                            <span class="custom-option" data-value="Feedback">Feedback/Complaint</span>
+                            <span class="custom-option" data-value="Other">Other Reason</span>
+                        </div>
+                        <input type="hidden" id="reason" name="reason">
+                    </div>
+                    
+                    <div class="form-group-s">
+                        <textarea placeholder="Your Message" rows="5" class="form-control-s" id="message"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btns">
+                        <i class="fab fa-whatsapp"></i> Send via WhatsApp
+                    </button>
+                </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3D Footer Background -->
+    <div id="footer-3d"></div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>SEVEN'S</h3>
+                    <p>Transforming visions into cosmic digital experiences through innovation, creativity, and technical excellence.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/sevens__studios?igsh=NjM0b3M2Y2VsNnhh"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/share/16ZVUCbBjR/"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://x.com/SEVENS_STUDIOS?t=yWi266ypjMMNjPtiTRb6mA&s=09"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.linkedin.com/in/seven-s-studios-29b815372?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" data-service="graphic-design"><i class="fas fa-chevron-right"></i> Galaxy Design</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Cosmic App Dev</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Interstellar Web</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Universal Video</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Nebula VFX</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home"><i class="fas fa-chevron-right"></i> Home</a></li>
+                        <li><a href="#services"><i class="fas fa-chevron-right"></i> Services</a></li>
+                        <li><a href="#portfolio"><i class="fas fa-chevron-right"></i> Portfolio</a></li>
+                        <li><a href="#testimonials"><i class="fas fa-chevron-right"></i> Testimonials</a></li>
+                        <li><a href="#contact"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to receive cosmic insights and updates.</p>
+                    <form class="footer-form">
+                        <div class="form-group">
+                            <input type="email" placeholder="Your Email" class="form-control" style="color: #f0f0ff;">
+                            <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </form>
+                    <img src="icon.png">
+                    <img class="img2" src="SEVEN.png">
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SEVEN'S studios. All rights reserved. Designed with <i class="fas fa-heart" style="color: var(--accent);"></i></p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Initialize particles.js
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 150, density: { enable: true, value_area: 800 } },
+                color: { value: "#ffffff" },
+                shape: { type: "circle", stroke: { width: 0, color: "#000000" } },
+                opacity: { value: 0.5, random: true },
+                size: { value: 2, random: true },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#8a4fff",
+                    opacity: 0.1,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 1,
+                    direction: "none",
+                    random: true,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "repulse" },
+                    onclick: { enable: true, mode: "push" },
+                    resize: true
+                },
+                modes: {
+                    repulse: { distance: 100, duration: 0.4 },
+                    push: { particles_nb: 4 }
+                }
+            },
+            retina_detect: true
+        });
+
+        // Mobile Navigation Toggle
+        const mobileToggle = document.querySelector('.mobile-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        mobileToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    navLinks.classList.remove('active');
+                }
+            });
+        });
+
+        // Testimonial Slider
+        const testimonials = document.querySelectorAll('.testimonial');
+        const prevBtn = document.querySelector('.testimonial-nav button:first-child');
+        const nextBtn = document.querySelector('.testimonial-nav button:last-child');
+        let currentIndex = 0;
+
+        function showTestimonial(index) {
+            testimonials.forEach(testimonial => testimonial.classList.remove('active'));
+            testimonials[index].classList.add('active');
+            currentIndex = index;
+        }
+
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
+            showTestimonial(currentIndex);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % testimonials.length;
+            showTestimonial(currentIndex);
+        });
+
+        // Service Card Animation
+        const serviceCards = document.querySelectorAll('.service-card');
+        
+        serviceCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const angleY = (x - centerX) / 8;
+                const angleX = (centerY - y) / 8;
+                
+                card.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateZ(20px)`;
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+            });
+        });
+
+        // Form styling
+        const formControls = document.querySelectorAll('.form-control');
+        
+        formControls.forEach(control => {
+            control.addEventListener('focus', () => {
+                control.style.background = 'rgba(138, 79, 255, 0.1)';
+                control.style.borderColor = 'var(--primary)';
+            });
+            
+            control.addEventListener('blur', () => {
+                control.style.background = 'rgba(138, 79, 255, 0.05)';
+                control.style.borderColor = 'rgba(138, 79, 255, 0.1)';
+            });
+        });
+        
+        // Service Modal Popup
+        const modal = document.getElementById('service-modal');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalContainer = document.getElementById('modal-container');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content');
+        const modalClose = document.getElementById('modal-close');
+        const learnMoreButtons = document.querySelectorAll('.learn-more-btn');
+        
+        // Service details data
+        const serviceDetails = {
+            'graphic-design': {
+                title: 'Galaxy Design',
+                icon: 'fas fa-palette',
+                content: `
+                    <div class="modal-service-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <div class="modal-content">
+                        <h4>Visual Identity & Branding</h4>
+                        <p>Our graphic design service creates compelling visual identities that communicate your brand's essence and values to your audience.</p>
+                        
+                        <h4>What We Offer:</h4>
+                        <ul>
+                            <li>Logo design and brand identity systems</li>
+                            <li>Marketing collateral (brochures, flyers, banners)</li>
+                            <li>Social media graphics and templates</li>
+                            <li>Packaging design and product labeling</li>
+                            <li>Infographics and data visualization</li>
+                        </ul>
+                        
+                        <h4>Design Process:</h4>
+                        <ul>
+                            <li>Comprehensive brand discovery</li>
+                            <li>Creative concept development</li>
+                            <li>Iterative design refinement</li>
+                            <li>Final file delivery in all required formats</li>
+                            <li>Brand style guide creation</li>
+                        </ul>
+                    </div>
+                `
+            },
+            'app-development': {
+                title: 'Cosmic App Dev',
+                icon: 'fas fa-mobile-alt',
+                content: `
+                    <div class="modal-service-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="modal-content">
+                        <h4>Native Mobile Solutions</h4>
+                        <p>We develop high-performance mobile applications that provide seamless user experiences across iOS and Android platforms.</p>
+                        
+                        <h4>Development Process:</h4>
+                        <ul>
+                            <li>Requirement analysis and prototyping</li>
+                            <li>UI/UX design with user testing</li>
+                            <li>Native iOS and Android development</li>
+                            <li>API integration and backend development</li>
+                            <li>Rigorous quality assurance testing</li>
+                            <li>App store deployment and maintenance</li>
+                        </ul>
+                        
+                        <h4>Technology Stack:</h4>
+                        <ul>
+                            <li>Swift for iOS development</li>
+                            <li>Kotlin for Android development</li>
+                            <li>React Native for cross-platform solutions</li>
+                            <li>Firebase and AWS for backend</li>
+                            <li>GraphQL and RESTful APIs</li>
+                        </ul>
+                    </div>
+                `
+            },
+            'web-development': {
+                title: 'Interstellar Web',
+                icon: 'fas fa-laptop-code',
+                content: `
+                    <div class="modal-service-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <div class="modal-content">
+                        <h4>Modern Web Experiences</h4>
+                        <p>We create responsive, high-performance websites that deliver exceptional user experiences and drive business results.</p>
+                        
+                        <h4>Our Approach:</h4>
+                        <ul>
+                            <li>Custom website design and development</li>
+                            <li>E-commerce solutions with payment integration</li>
+                            <li>Content Management System implementation</li>
+                            <li>Progressive Web App development</li>
+                            <li>Search Engine Optimization (SEO)</li>
+                        </ul>
+                        
+                        <h4>Technology Expertise:</h4>
+                        <ul>
+                            <li>HTML5, CSS3, JavaScript (ES6+)</li>
+                            <li>React, Angular, Vue.js frameworks</li>
+                            <li>Node.js, Python, PHP backend</li>
+                            <li>WordPress, Shopify, Magento platforms</li>
+                            <li>Database solutions: MySQL, MongoDB</li>
+                        </ul>
+                    </div>
+                `
+            },
+            'video-editing': {
+                title: 'Universal Video',
+                icon: 'fas fa-video',
+                content: `
+                    <div class="modal-service-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="modal-content">
+                        <h4>Professional Video Production</h4>
+                        <p>We transform raw footage into compelling visual stories that engage audiences and communicate your message effectively.</p>
+                        
+                        <h4>Our Services:</h4>
+                        <ul>
+                            <li>Commercial and promotional videos</li>
+                            <li>Social media content and ads</li>
+                            <li>Corporate training and explainer videos</li>
+                            <li>Event coverage and highlights</li>
+                            <li>Documentary storytelling</li>
+                        </ul>
+                        
+                        <h4>Editing Process:</h4>
+                        <ul>
+                            <li>Footage organization and selection</li>
+                            <li>Storyboarding and narrative development</li>
+                            <li>Color correction and grading</li>
+                            <li>Audio enhancement and sound design</li>
+                            <li>Motion graphics and text animation</li>
+                            <li>Final export in required formats</li>
+                        </ul>
+                    </div>
+                `
+            },
+            'vfx-graphics': {
+                title: 'Nebula VFX',
+                icon: 'fas fa-magic',
+                content: `
+                    <div class="modal-service-icon">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <div class="modal-content">
+                        <h4>Visual Effects & Motion Graphics</h4>
+                        <p>We create stunning visual effects that transform ordinary footage into extraordinary visual experiences.</p>
+                        
+                        <h4>Our VFX Solutions:</h4>
+                        <ul>
+                            <li>Green screen compositing and keying</li>
+                            <li>3D integration with live footage</li>
+                            <li>Particle and fluid simulations</li>
+                            <li>Motion tracking and match moving</li>
+                            <li>Destruction and environmental effects</li>
+                        </ul>
+                        
+                        <h4>Technical Expertise:</h4>
+                        <ul>
+                            <li>Adobe After Effects and Premiere Pro</li>
+                            <li>Cinema 4D and Blender integration</li>
+                            <li>Nuke compositing</li>
+                            <li>Real-time VFX with Unreal Engine</li>
+                            <li>Advanced color grading with DaVinci Resolve</li>
+                        </ul>
+                    </div>
+                `
+            },
+            '3d-animation': {
+                title: 'Universe Animation',
+                icon: 'fas fa-cube',
+                content: `
+                    <div class="modal-service-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <div class="modal-content">
+                        <h4>Immersive 3D Animation</h4>
+                        <p>We create captivating 3D animations that bring your ideas to life and engage your audience through visual storytelling.</p>
+                        
+                        <h4>Our Animation Services:</h4>
+                        <ul>
+                            <li>Product visualization and demonstration</li>
+                            <li>Character animation and rigging</li>
+                            <li>Architectural visualization</li>
+                            <li>Medical and scientific animation</li>
+                            <li>Animated explainer videos</li>
+                        </ul>
+                        
+                        <h4>Production Pipeline:</h4>
+                        <ul>
+                            <li>Concept development and storyboarding</li>
+                            <li>3D modeling and texturing</li>
+                            <li>Rigging and character setup</li>
+                            <li>Animation and motion capture</li>
+                            <li>Lighting and rendering</li>
+                            <li>Compositing and final delivery</li>
+                        </ul>
+                    </div>
+                `
+            }
+        };
+        
+        // Open modal
+        learnMoreButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const serviceId = this.getAttribute('data-service');
+                const service = serviceDetails[serviceId];
+                
+                if (service) {
+                    modalTitle.textContent = service.title;
+                    modalContent.innerHTML = service.content;
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                    
+                    // Initialize 3D in modal with service-specific model
+                    initModal3D(serviceId);
+                    
+                    // Add animation class after a small delay
+                    setTimeout(() => {
+                        modalContainer.classList.add('active');
+                    }, 10);
+                }
+            });
+        });
+        
+        // Close modal
+        function closeModal() {
+            modalContainer.classList.remove('active');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+        
+        modalClose.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', closeModal);
+        
+        // Close modal when pressing Esc key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.style.display === 'block') {
+                closeModal();
+            }
+        });
+
+        // Initialize Three.js scenes
+        function init3DScenes() {
+            // Hero 3D scene
+            initHero3D();
+            
+            // Portfolio 3D scenes
+            initPortfolio3D();
+            
+            // Footer 3D scene
+            initFooter3D();
+        }
+
+        // Hero 3D Background - Galaxy Scene
+        function initHero3D() {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('hero-3d').appendChild(renderer.domElement);
+            
+            // Create a black hole at the center
+            const blackHoleGeometry = new THREE.SphereGeometry(1.5, 64, 64);
+            const blackHoleMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0x000000,
+                opacity: 1
+            });
+            const blackHole = new THREE.Mesh(blackHoleGeometry, blackHoleMaterial);
+            scene.add(blackHole);
+            
+            // Create accretion disk
+            const diskGeometry = new THREE.RingGeometry(2, 4, 64);
+            const diskMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0x7300ff,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.6
+            });
+            const disk = new THREE.Mesh(diskGeometry, diskMaterial);
+            disk.rotation.x = Math.PI / 2;
+            scene.add(disk);
+            
+            // Create stars (particles)
+            const starsGeometry = new THREE.BufferGeometry();
+            const starsCount = 4000;
+            const posArray = new Float32Array(starsCount * 3);
+            const colorsArray = new Float32Array(starsCount * 3.5);
+            
+            for (let i = 0; i < starsCount * 3; i += 3) {
+                // Position stars in a spiral galaxy pattern
+                const radius = Math.random() * 30 + 5;  // Half of 80 + 20 → 40 + 10
+                const angle = Math.random() * Math.PI * 2; // Half of 4π → 2π (1 full spiral turn)
+                const height = (Math.random() - 0.5) * 10; // Half of 20 → 10
+
+                posArray[i] = Math.cos(angle) * radius;   // X
+                posArray[i + 1] = height;                 // Y
+                posArray[i + 2] = Math.sin(angle) * radius; // Z
+                
+                // Random star color (white, blue, dark blue)
+                const color = new THREE.Color();
+                if (Math.random() > 0.8) {
+                    color.setRGB(0.05, 0.05, 0.3); // dark blue
+                } else if (Math.random() > 0.5) {
+                    color.setRGB(0.5, 0.5, 1); // blue
+                } else {
+                    color.setRGB(1, 1, 1); // white
+                }
+                colorsArray[i] = color.r;
+                colorsArray[i+1] = color.g;
+                colorsArray[i+2] = color.b;
+            }
+            
+            starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            starsGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
+            
+            const starsMaterial = new THREE.PointsMaterial({
+                size: 0.1,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const stars = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(stars);
+            
+            // Create planets
+            const planet1Geometry = new THREE.SphereGeometry(0.8, 32, 32);
+            const planet1Material = new THREE.MeshStandardMaterial({ 
+                color: 0xff4f9a,
+                wireframe: true
+            });
+            const planet1 = new THREE.Mesh(planet1Geometry, planet1Material);
+            planet1.position.set(8, 2, 0);
+            scene.add(planet1);
+
+            const planet2Geometry = new THREE.SphereGeometry(0.6, 30, 30);
+            const planet2Material = new THREE.MeshStandardMaterial({ 
+                color: 0xB3E5FC,
+                wireframe: true
+            });
+            const planet2 = new THREE.Mesh(planet2Geometry, planet2Material);
+            planet2.position.set(8, 4, 10);
+            scene.add(planet2);
+
+            const planet3Geometry = new THREE.SphereGeometry(1, 40, 40);
+            const planet3Material = new THREE.MeshStandardMaterial({ 
+                color: 0x014421,
+                wireframe: true
+            });
+            const planet3 = new THREE.Mesh(planet3Geometry, planet3Material);
+            planet3.position.set(8, 2, 0);
+            scene.add(planet3);
+            
+            // Add ambient and directional light
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            const pointLight = new THREE.PointLight(0x8a4fff, 1, 100);
+            pointLight.position.set(0, 0, 0);
+            scene.add(pointLight);
+            
+            camera.position.z = 5;
+            
+            // Mouse movement effect
+            let mouseX = 0;
+            let mouseY = 0;
+            
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            });
+            
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Rotate black hole and disk
+                blackHole.rotation.y += 0.005;
+                disk.rotation.y += 0.01;
+                
+                // Orbit planet around the center
+                planet1.position.x = Math.cos(Date.now() * 0.001) * 8;
+                planet1.position.y = Math.sin(Date.now() * 0.001) * 8;
+                planet1.position.z = Math.sin(Date.now() * 0.001) * 8;
+                planet1.rotation.x += 0.002;
+                planet1.rotation.y += 0.003;
+                planet1.rotation.z += 0.001;
+
+                
+                planet2.position.x = Math.cos(Date.now() * -0.0013) * 6;
+                planet2.position.y = Math.sin(Date.now() * 0.0013) * 6;
+                planet2.position.z = Math.sin(Date.now() * -0.0013) * 6;
+                planet2.rotation.x += 0.004;
+                planet2.rotation.y += 0.006;
+                planet2.rotation.z += 0.002;
+
+
+                planet3.position.x = Math.cos(Date.now() * -0.0015) * 10;
+                planet3.position.z = Math.sin(Date.now() * -0.0015) * 10;
+                planet3.rotation.x += 0.001;
+                planet3.rotation.y += 0.004;
+                planet3.rotation.z += 0.005;
+                
+                // Move camera based on mouse position
+                camera.position.x += (mouseX * 10 - camera.position.x) * 0.05;
+                camera.position.y += (mouseY * 8 - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+                
+                renderer.render(scene, camera);
+            }
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+            
+            animate();
+        }
+
+        // Portfolio 3D Scenes
+        function initPortfolio3D() {
+            const portfolioItems = [
+                { id: 'portfolio-3d-1', title: 'Galaxy Identity Design' },
+                { id: 'portfolio-3d-2', title: 'Cosmic App Design' },
+                { id: 'portfolio-3d-3', title: 'Interstellar Website' }
+            ];
+            
+            portfolioItems.forEach((item, index) => {
+                const container = document.getElementById(item.id);
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ alpha: true });
+                renderer.setSize(container.clientWidth, container.clientHeight);
+                container.appendChild(renderer.domElement);
+                
+                // Create different cosmic objects for each portfolio item
+                let mainObject;
+                switch(index) {
+                    case 0:// Galaxy Identity Design
+                        const galaxyGeometry = new THREE.TorusGeometry(1.2, 0.3, 16, 100);
+                        const galaxyMaterial = new THREE.MeshBasicMaterial({ 
+                            color: 0x8a4fff,
+                            wireframe: true
+                        });
+                        mainObject = new THREE.Mesh(galaxyGeometry, galaxyMaterial);
+                        scene.add(mainObject);
+                        break;
+                    case 1: // Cosmic App Design - Mobile Phone
+                       // Create phone group as main object
+                        mainObject = new THREE.Group();
+
+                        // Create phone body
+                        const phoneBody = new THREE.BoxGeometry(0.8, 1.6, 0.1);
+                        const bodyMaterial = new THREE.MeshStandardMaterial({ 
+                            color: 0x0f0c1d,
+                            wireframe: true
+                        });
+                        const bodyMesh = new THREE.Mesh(phoneBody, bodyMaterial);
+                        mainObject.add(bodyMesh);
+
+                        // Add screen
+                        const screenGeometry = new THREE.BoxGeometry(0.7, 1.4, -0.06); // 0.02 adds thickness
+                        const screenMaterial = new THREE.MeshStandardMaterial({ 
+                            color: 0x00e6cc
+                        });
+                        const screen = new THREE.Mesh(screenGeometry, screenMaterial);
+                        screen.position.z = 0.03;
+                        mainObject.add(screen);
+
+                        // Add app icons
+                        for (let i = 0; i < 4; i++) {
+                            for (let j = 0; j < 4; j++) {
+                                const icon = new THREE.BoxGeometry(0.1, 0.1, 0.02);
+                                const iconMaterial = new THREE.MeshBasicMaterial({ 
+                                    color: 0xff4f9a
+                                });
+                                const appIcon = new THREE.Mesh(icon, iconMaterial);
+                                appIcon.position.set(-0.3 + i * 0.2, -0.5 + j * 0.3, 0.07);
+                                mainObject.add(appIcon);
+                            }
+                        }
+
+                        // Add the main object (phone group) to the scene
+                        scene.add(mainObject);
+
+                        break;
+                        
+                    case 2: // Interstellar Website - Globe with Web
+                        // Create Earth globe group
+                        mainObject = new THREE.Group();
+
+                        // First globe (inner)
+                        const globe1 = new THREE.SphereGeometry(1.2, 32, 32);
+                        const globeMaterial1 = new THREE.MeshBasicMaterial({ 
+                            color: 0x00e6cc,
+                            wireframe: true
+                        });
+                        const globeMesh1 = new THREE.Mesh(globe1, globeMaterial1);
+                        mainObject.add(globeMesh1);
+
+                        // Second globe (outer wireframe)
+                        const globe2 = new THREE.SphereGeometry(1.25, 32, 32); // slightly larger
+                        const globeMaterial2 = new THREE.MeshBasicMaterial({ 
+                            color: 0x8a4fff,
+                            wireframe: true
+                        });
+                        const globeMesh2 = new THREE.Mesh(globe2, globeMaterial2);
+                        mainObject.add(globeMesh2);
+
+                        // Add group to scene
+                        scene.add(mainObject);
+
+                        // (Optional) Longitude and latitude lines can also be added to mainObject if you want
+
+                        // Longitude lines
+                        /*for (let i = 0; i < 12; i++) {
+                            const angle = (i / 12) * Math.PI * 2;
+                            const index = i * 6;
+                            
+                            linesPosArray[index] = Math.cos(angle) * 1.2;
+                            linesPosArray[index+1] = 0;
+                            linesPosArray[index+2] = Math.sin(angle) * 1.2;
+                            
+                            linesPosArray[index+3] = Math.cos(angle) * 1.2;
+                            linesPosArray[index+4] = 0;
+                            linesPosArray[index+5] = Math.sin(angle) * 1.2;
+                            
+                            linesPosArray[index+6] = Math.cos(angle + Math.PI) * 1.2;
+                            linesPosArray[index+7] = 0;
+                            linesPosArray[index+8] = Math.sin(angle + Math.PI) * 1.2;
+                        }
+                        
+                        // Latitude lines
+                        for (let i = 0; i < 6; i++) {
+                            const lat = -Math.PI/2 + (i + 1) * Math.PI/7;
+                            const radius = Math.cos(lat) * 1.2;
+                            const y = Math.sin(lat) * 1.2;
+                            const startIndex = 72 + i * 36;
+                            
+                            for (let j = 0; j < 12; j++) {
+                                const angle = (j / 12) * Math.PI * 2;
+                                const index = startIndex + j * 3;
+                                
+                                linesPosArray[index] = Math.cos(angle) * radius;
+                                linesPosArray[index+1] = y;
+                                linesPosArray[index+2] = Math.sin(angle) * radius;
+                            }
+                            
+                            // Close the circle
+                            linesPosArray[startIndex + 36] = linesPosArray[startIndex];
+                            linesPosArray[startIndex + 37] = linesPosArray[startIndex+1];
+                            linesPosArray[startIndex + 38] = linesPosArray[startIndex+2];
+                        }
+                        
+                        linesGeometry.setAttribute('position', new THREE.BufferAttribute(linesPosArray, 3));
+                        
+                        const linesMaterial = new THREE.LineBasicMaterial({ 
+                            color: 0x8a4fff 
+                        });
+                        
+                        const lines = new THREE.LineSegments(linesGeometry, linesMaterial);
+                        scene.add(lines);
+                        
+                        // Create web connections
+                        const webGeometry = new THREE.BufferGeometry();
+                        const webCount = 30;
+                        const webPosArray = new Float32Array(webCount * 2 * 3);
+                        
+                        for (let i = 0; i < webCount; i++) {
+                            const startAngle = Math.random() * Math.PI * 2;
+                            const startLat = -Math.PI/2 + Math.random() * Math.PI;
+                            const startRadius = Math.cos(startLat) * 1.2;
+                            const startY = Math.sin(startLat) * 1.2;
+                            
+                            const endAngle = Math.random() * Math.PI * 2;
+                            const endLat = -Math.PI/2 + Math.random() * Math.PI;
+                            const endRadius = Math.cos(endLat) * 1.2;
+                            const endY = Math.sin(endLat) * 1.2;
+                            
+                            const index = i * 6;
+                            
+                            webPosArray[index] = Math.cos(startAngle) * startRadius;
+                            webPosArray[index+1] = startY;
+                            webPosArray[index+2] = Math.sin(startAngle) * startRadius;
+                            
+                            webPosArray[index+3] = Math.cos(endAngle) * endRadius;
+                            webPosArray[index+4] = endY;
+                            webPosArray[index+5] = Math.sin(endAngle) * endRadius;
+                        }
+                        
+                        webGeometry.setAttribute('position', new THREE.BufferAttribute(webPosArray, 3));
+                        
+                        const webMaterial = new THREE.LineBasicMaterial({ 
+                            color: 0xff4f9a,
+                            opacity: 0.7,
+                            transparent: true
+                        });
+                        
+                        const web = new THREE.LineSegments(webGeometry, webMaterial);
+                        scene.add(web);*/
+                        break;
+                }
+                
+                // Add lights
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+                scene.add(ambientLight);
+                
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                directionalLight.position.set(0, 1, 1);
+                scene.add(directionalLight);
+                
+                camera.position.z = 2;
+                
+                // Animation
+                function animate() {
+                    requestAnimationFrame(animate);
+                    
+                    if (mainObject) {
+                        mainObject.rotation.x += 0.005;
+                        mainObject.rotation.y += 0.01;
+                    }
+                    
+                    renderer.render(scene, camera);
+                }
+                
+                animate();
+            });
+        }
+
+        // Footer 3D Scene - Starfield
+        /*function initFooter3D() {
+            const container = document.getElementById('footer-3d');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(105, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            // Create a starfield
+            const starsGeometry = new THREE.BufferGeometry();
+            const starsCount = 3500;
+            const posArray = new Float32Array(starsCount * 3);
+            
+            for (let i = 0; i < starsCount * 3; i += 3) {
+                posArray[i] = (Math.random() - 0.5) * 2000;
+                posArray[i+1] = (Math.random() - 0.5) * 2000;
+                posArray[i+2] = (Math.random() - 0.5) * 2000;
+            }
+            
+            starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            
+            const starsMaterial = new THREE.PointsMaterial({
+                size: 1.5,
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const stars = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(stars);
+            
+            camera.position.z = 5;
+            
+            // Animation
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                stars.rotation.y += 0.001;
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+        }*/
+
+        // Modal 3D Scene - UNIQUE FOR EACH SERVICE
+        function initModal3D(serviceId) {
+            const container = document.getElementById('modal-3d');
+            container.innerHTML = '';
+            
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            // Create unique 3D objects based on service
+            let mainObject;
+            
+            switch(serviceId) {
+                case 'graphic-design':
+                    // Create a color palette
+                    const paletteBase = new THREE.BoxGeometry(2, 0.3, 0.5);
+                    const baseMaterial = new THREE.MeshBasicMaterial({ color: 0x333333 });
+                    const base = new THREE.Mesh(paletteBase, baseMaterial);
+                    scene.add(base);
+                    
+                    // Add color swatches
+                    const colors = [0xff4f9a, 0xaff21a, 0x00e6cc, 0xffcc00, 0x8a4fff];
+                    for (let i = 0; i < 5; i++) {
+                        const swatch = new THREE.CylinderGeometry(0.4, 0.4, 0.1, 32);
+                        const swatchMaterial = new THREE.MeshBasicMaterial({ color: colors[i] });
+                        const colorSwatch = new THREE.Mesh(swatch, swatchMaterial);
+                        colorSwatch.position.set(-1.6 + i * 0.8, 0.25, 0);
+                        scene.add(colorSwatch);
+                    }
+                    break;
+                    
+                case 'app-development':
+                    // Create a smartphone
+                    const phoneBody = new THREE.BoxGeometry(0.8, 1.6, 0.1);
+                    const bodyMaterial = new THREE.MeshBasicMaterial({ color: 0x473889 });
+                    const phone = new THREE.Mesh(phoneBody, bodyMaterial);
+                    scene.add(phone);
+                    
+                    // Add screen
+                    const screen = new THREE.PlaneGeometry(0.7, 1.4);
+                    const screenMaterial = new THREE.MeshBasicMaterial({ 
+                        color: 0x00e6cc,
+                        wireframe: true
+                    });
+                    const phoneScreen = new THREE.Mesh(screen, screenMaterial);
+                    phoneScreen.position.z = 0.06;
+                    scene.add(phoneScreen);
+                    break;
+                    
+                case 'web-development':
+                    // Create a wireframe globe
+                    const globe = new THREE.SphereGeometry(1.2, 16, 16);
+                    const globeMaterial = new THREE.MeshBasicMaterial({ 
+                        color: 0x8a4fff,
+                        wireframe: true
+                    });
+                    mainObject = new THREE.Mesh(globe, globeMaterial);
+                    scene.add(mainObject);
+                    
+                    // Add connections
+                    const connections = new THREE.LineSegments(
+                        new THREE.WireframeGeometry(globe),
+                        new THREE.LineBasicMaterial({ color: 0x00e6cc })
+                    );
+                    scene.add(connections);
+                    break;
+                    
+                case 'video-editing':
+                    // Create film strips
+                    for (let i = 0; i < 5; i++) {
+                        const filmStrip = new THREE.BoxGeometry(1.2, 0.8, 0.05);
+                        const filmMaterial = new THREE.MeshBasicMaterial({ 
+                            color: 0x473889,
+                            wireframe: true
+                        });
+                        const strip = new THREE.Mesh(filmStrip, filmMaterial);
+                        strip.position.set(0, -1.2 + i * 0.6, 0);
+                        scene.add(strip);
+                        
+                        // Add frames
+                        for (let j = 0; j < 3; j++) {
+                            const frame = new THREE.PlaneGeometry(0.3, 0.5);
+                            const frameMaterial = new THREE.MeshBasicMaterial({ 
+                                color: 0x8a4fff,
+                                side: THREE.DoubleSide
+                            });
+                            const filmFrame = new THREE.Mesh(frame, frameMaterial);
+                            filmFrame.position.set(-0.4 + j * 0.4, -1.2 + i * 0.6, 0.03);
+                            scene.add(filmFrame);
+                        }
+                    }
+                    break;
+                    
+                case 'vfx-graphics':
+                    // Create particle system
+                    const particlesGeometry = new THREE.BufferGeometry();
+                    const particlesCount = 500;
+                    const particlesPosArray = new Float32Array(particlesCount * 3);
+
+                    for (let i = 0; i < particlesCount; i++) {
+                        const radius = 2 + Math.random() * 2;
+                        const theta = Math.random() * Math.PI * 2;
+                        const phi = Math.acos(2 * Math.random() - 1);
+
+                        const x = radius * Math.sin(phi) * Math.cos(theta);
+                        const y = radius * Math.sin(phi) * Math.sin(theta);
+                        const z = radius * Math.cos(phi);
+
+                        particlesPosArray[i * 3] = x;
+                        particlesPosArray[i * 3 + 1] = y;
+                        particlesPosArray[i * 3 + 2] = z;
+                    }
+
+                    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlesPosArray, 3));
+
+                    const particlesMaterial = new THREE.PointsMaterial({
+                        size: 0.05,
+                        color: 0x00e6cc,
+                        transparent: true,
+                        opacity: 0.8,
+                        sizeAttenuation: true
+                    });
+
+                    mainObject = new THREE.Points(particlesGeometry, particlesMaterial);
+                    scene.add(mainObject);
+
+                    break;
+                    
+                case '3d-animation':
+                    // Create animated torus knot
+                    const knotGeometry = new THREE.TorusKnotGeometry(1, 0.3, 128, 32);
+                    const knotMaterial = new THREE.MeshBasicMaterial({ 
+                        color: 0xff4f9a,
+                        wireframe: true
+                    });
+                    mainObject = new THREE.Mesh(knotGeometry, knotMaterial);
+                    scene.add(mainObject);
+                    break;
+                    
+                default:
+                    // Default galaxy
+                    const galaxyGeometry = new THREE.TorusGeometry(1.5, 0.4, 16, 100);
+                    const galaxyMaterial = new THREE.MeshBasicMaterial({ 
+                        color: 0x8a4fff,
+                        wireframe: true
+                    });
+                    mainObject = new THREE.Mesh(galaxyGeometry, galaxyMaterial);
+                    scene.add(mainObject);
+            }
+            
+            // Add ambient and directional light
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            camera.position.z = 3;
+            
+            // Add rotation controls
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            // Animation
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                if (mainObject) {
+                    mainObject.rotation.x += 0.005;
+                    mainObject.rotation.y += 0.01;
+                }
+                
+                controls.update();
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+        }
+
+        // Initialize all 3D scenes when page loads
+        window.addEventListener('load', () => {
+            init3DScenes();
+            
+            // Create additional stars in background
+            createBackgroundStars();
+        });
+        
+        // Create background stars
+        function createBackgroundStars() {
+            const cosmicOverlay = document.querySelector('.cosmic-overlay');
+            const starsCount = 100;
+            
+            for (let i = 0; i < starsCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random position
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                
+                // Random size
+                const size = Math.random() * 3 + 1;
+                
+                star.style.cssText = `
+                    left: ${left}%;
+                    top: ${top}%;
+                    width: ${size}px;
+                    height: ${size}px;
+                    animation-delay: ${Math.random() * 5}s;
+                `;
+                
+                cosmicOverlay.appendChild(star);
+            }
+        }
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('whatsappForm');
+            const notification = document.getElementById('notification');
+
+            form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const reason = document.getElementById('reason').value.trim();
+            const message = document.getElementById('message').value.trim();
+            const receiver = 9344304597;
+
+            // Validate required fields
+            if (!name || !phone || !reason) {
+                showNotification('Please fill in all required fields', true);
+                return;
+            }
+
+            // Validate phone number: only digits, 8–15 digits
+            const cleanPhone = phone.replace(/\s+/g, '');
+            if (!/^\d{8,15}$/.test(cleanPhone)) {
+                showNotification('Phone number must be 8–15 digits with no letters or symbols.', true);
+                return;
+            }
+
+            // Build WhatsApp message
+            let fullMessage = `Hello, my name is ${name}.\n`;
+            fullMessage += `Mobile number : ${cleanPhone}.\n`;
+            fullMessage += `I'm contacting you regarding: ${reason}.\n`;
+            if (message) {
+                fullMessage += `\nAdditional details:\n${message}`;
+            }
+
+            const encodedMessage = encodeURIComponent(fullMessage);
+            const whatsappDesktopUrl = `whatsapp://send?phone=${receiver}&text=${encodedMessage}`;
+            const whatsappWebUrl = `https://web.whatsapp.com/send?phone=${receiver}&text=${encodedMessage}`;
+
+            // Show notification
+            showNotification('Trying to open WhatsApp...', false);
+
+            // Try to open WhatsApp Desktop app
+            window.location.href = whatsappDesktopUrl;
+
+            // Fallback to WhatsApp Web after 2 seconds
+            setTimeout(() => {
+                window.open(whatsappWebUrl, '_blank');
+            }, 2000);
+            });
+
+            // Show notification message
+            function showNotification(message, isError) {
+            if (!notification) return;
+
+            notification.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i> ${message}`;
+            notification.className = isError ? 'notification error show' : 'notification show';
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+            }
+        });
+    </script>
+
+
+
+
+    <script>
+        const selectTrigger = document.querySelector('.custom-select-trigger');
+        const optionsContainer = document.querySelector('.custom-options');
+        const hiddenInput = document.getElementById('reason');
+
+        selectTrigger.addEventListener('click', () => {
+            optionsContainer.style.display = optionsContainer.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.querySelectorAll('.custom-option').forEach(option => {
+        option.addEventListener('click', () => {
+            selectTrigger.textContent = option.textContent;
+            selectTrigger.classList.add('selected'); // ✅ Add a class
+            hiddenInput.value = option.dataset.value;
+            optionsContainer.style.display = 'none';
+            });
+        });
+
+        // Close dropdown if clicked outside
+        document.addEventListener('click', function (e) {
+            if (!document.querySelector('.custom-select-wrapper').contains(e.target)) {
+            optionsContainer.style.display = 'none';
+            }
+        });
+    </script>
+
+
+</body>
+</html>
