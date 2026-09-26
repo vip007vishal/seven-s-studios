@@ -26,9 +26,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
         rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
     <style>
         :root {
             --primary: #8a4fff;
@@ -2387,14 +2387,14 @@
         <div class="container">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <img src="SEVEN.png">
+                    <img src="SEVEN.png" loading="lazy" decoding="async" alt="SEVEN">
                 </div>
             </div>
         </div>
     </section>
 
     <div class="comp-vid">
-        <video src="main.mp4" autoplay muted loop
+        <video src="main.mp4" autoplay muted loop preload="metadata"
             style="width: 95%; height: auto; z-index: 100; position: relative; left: 2.5%;"></video>
     </div>
 
@@ -3547,12 +3547,16 @@
         }
 
 
-        window.addEventListener('load', () => {
+        function startHeroAnd3D() {
             init3DScenes();
-
-
             createBackgroundStars();
-        });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', startHeroAnd3D);
+        } else {
+            startHeroAnd3D();
+        }
 
 
         function createBackgroundStars() {
@@ -4021,31 +4025,41 @@
                     if (doneCount >= totalSlots) onAllDone();
                 }
 
-                // onload: image bytes are ready → optionally decode off-thread, then swap in
-                img.onload = (function(imgEl, slot, gIdx) {
-                    return function() {
-                        if (typeof imgEl.decode === 'function') {
-                            // decode() moves raster work off the main thread for a jank-free swap
-                            imgEl.decode().then(function() {
-                                swapIn(imgEl, slot, gIdx);
-                                markDone();
+                // Sequential loader: load images one by one to prevent network contention
+                function loadSequential(slotIdx) {
+                    if (panel.dataset.renderId !== renderId) return;
+                    if (slotIdx >= totalSlots) return;
+
+                    var src = slice[slotIdx];
+                    var globalIdx = start + slotIdx;
+                    var img = new Image();
+                    img.alt      = 'Design item ' + (globalIdx + 1);
+                    img.decoding = 'async';
+
+                    function proceedNext() {
+                        markDone();
+                        loadSequential(slotIdx + 1);
+                    }
+
+                    img.onload = function() {
+                        if (panel.dataset.renderId !== renderId) return;
+                        if (typeof img.decode === 'function') {
+                            img.decode().then(function() {
+                                swapIn(img, slotIdx, globalIdx);
+                                proceedNext();
                             }).catch(function() {
-                                // decode failed but image loaded — show it anyway
-                                swapIn(imgEl, slot, gIdx);
-                                markDone();
+                                swapIn(img, slotIdx, globalIdx);
+                                proceedNext();
                             });
                         } else {
-                            swapIn(imgEl, slot, gIdx);
-                            markDone();
+                            swapIn(img, slotIdx, globalIdx);
+                            proceedNext();
                         }
                     };
-                })(img, i, globalIdx);
 
-                // onerror: network/404 failure — remove shimmer, show broken-image placeholder
-                img.onerror = (function(slot) {
-                    return function() {
+                    img.onerror = function() {
                         if (panel.dataset.renderId !== renderId) return;
-                        var ph = placeholders[slot];
+                        var ph = placeholders[slotIdx];
                         if (ph && ph.parentNode === grid) {
                             var errEl = document.createElement('div');
                             errEl.className = 'pf-shimmer';
@@ -4053,13 +4067,14 @@
                             errEl.innerHTML = '<i class="fas fa-image"></i>';
                             grid.replaceChild(errEl, ph);
                         }
-                        markDone();
+                        proceedNext();
                     };
-                })(i);
 
-                // Set src LAST — after handlers are attached — so onload/onerror always fire
-                img.src = src;
-            });
+                    img.src = src;
+                }
+
+                // Start loading images one by one
+                loadSequential(0);
 
             // Safety net: in case some callbacks never fire (browser quirk),
             // force-complete after 10 s so pagination always appears.
@@ -4354,40 +4369,55 @@
                 if (doneCount >= totalSlots) onSubDone();
             }
 
-            slice.forEach(function(src, i) {
-                var globalIdx = start + i;
+            function loadSubSequential(slotIdx) {
+                if (container.dataset.renderId !== renderId) return;
+                if (slotIdx >= totalSlots) return;
+
+                var src = slice[slotIdx];
+                var globalIdx = start + slotIdx;
                 var img = new Image();
                 img.alt      = 'Design item ' + (globalIdx + 1);
                 img.decoding = 'async';
 
-                img.onload = (function(imgEl, slot, gIdx) {
-                    return function() {
-                        if (typeof imgEl.decode === 'function') {
-                            imgEl.decode().then(function() { swapSubIn(imgEl,slot,gIdx); markSubDone(); })
-                                          .catch(function() { swapSubIn(imgEl,slot,gIdx); markSubDone(); });
-                        } else {
-                            swapSubIn(imgEl,slot,gIdx); markSubDone();
-                        }
-                    };
-                })(img, i, globalIdx);
+                function proceedNext() {
+                    markSubDone();
+                    loadSubSequential(slotIdx + 1);
+                }
 
-                img.onerror = (function(slot) {
-                    return function() {
-                        if (container.dataset.renderId !== renderId) return;
-                        var ph = placeholders[slot];
-                        if (ph && ph.parentNode === grid) {
-                            var errEl = document.createElement('div');
-                            errEl.className = 'pf-shimmer';
-                            errEl.style.cssText = 'display:flex;align-items:center;justify-content:center;color:rgba(138,79,255,0.4);font-size:2rem;';
-                            errEl.innerHTML = '<i class="fas fa-image"></i>';
-                            grid.replaceChild(errEl, ph);
-                        }
-                        markSubDone();
-                    };
-                })(i);
+                img.onload = function() {
+                    if (container.dataset.renderId !== renderId) return;
+                    if (typeof img.decode === 'function') {
+                        img.decode().then(function() {
+                            swapSubIn(img, slotIdx, globalIdx);
+                            proceedNext();
+                        }).catch(function() {
+                            swapSubIn(img, slotIdx, globalIdx);
+                            proceedNext();
+                        });
+                    } else {
+                        swapSubIn(img, slotIdx, globalIdx);
+                        proceedNext();
+                    }
+                };
+
+                img.onerror = function() {
+                    if (container.dataset.renderId !== renderId) return;
+                    var ph = placeholders[slotIdx];
+                    if (ph && ph.parentNode === grid) {
+                        var errEl = document.createElement('div');
+                        errEl.className = 'pf-shimmer';
+                        errEl.style.cssText = 'display:flex;align-items:center;justify-content:center;color:rgba(138,79,255,0.4);font-size:2rem;';
+                        errEl.innerHTML = '<i class="fas fa-image"></i>';
+                        grid.replaceChild(errEl, ph);
+                    }
+                    proceedNext();
+                };
 
                 img.src = src;
-            });
+            }
+
+            // Start loading sub-gallery images one by one
+            loadSubSequential(0);
 
             setTimeout(function() {
                 if (container.dataset.renderId === renderId && doneCount < totalSlots) {
@@ -4489,11 +4519,13 @@
             btn.addEventListener('click', function() { activateTab(btn.dataset.service); });
         });
 
-        // Initialise first tab exactly once (avoid double-fire from DOMContentLoaded + readyState check)
+        // Initialise first tab after a short delay so Hero 3D black hole renders first
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() { activateTab('graphic-design'); });
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(function() { activateTab('graphic-design'); }, 150);
+            });
         } else {
-            activateTab('graphic-design');
+            setTimeout(function() { activateTab('graphic-design'); }, 150);
         }
 
     }());
