@@ -1232,73 +1232,598 @@
 
 
 
+        /* ===== PORTFOLIO SHOWCASE ===== */
         .portfolio-showcase {
-            padding: 80px 0;
-            background: rgba(15, 12, 29, 0.6);
-        }
-
-        .portfolio-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .portfolio-item {
+            padding: 100px 0;
+            background:
+                radial-gradient(ellipse at 20% 0%, rgba(138, 79, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(0, 230, 204, 0.06) 0%, transparent 50%),
+                rgba(15, 12, 29, 0.7);
             position: relative;
-            border-radius: 15px;
-            overflow: hidden;
-            height: 300px;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
         }
 
-        .portfolio-overlay {
+        .portfolio-showcase::before {
+            content: '';
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(15, 12, 29, 0.9), transparent);
-            padding: 30px 20px 20px;
-            transform: translateY(50px);
-            opacity: 0;
-            transition: var(--transition);
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(138,79,255,0.5), rgba(0,230,204,0.5), transparent);
+        }
+        .portfolio-showcase::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(138,79,255,0.5), rgba(0,230,204,0.5), transparent);
         }
 
-        .portfolio-item:hover .portfolio-overlay {
-            transform: translateY(0);
+        /* Service Tabs */
+        .portfolio-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .portfolio-tab {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 11px 24px;
+            border: 2px solid rgba(138, 79, 255, 0.25);
+            border-radius: 50px;
+            background: rgba(25, 22, 46, 0.6);
+            color: var(--gray);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(8px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portfolio-tab::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(138,79,255,0.35), rgba(0,230,204,0.2));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: inherit;
+        }
+
+        .portfolio-tab i {
+            font-size: 0.82rem;
+            position: relative;
+        }
+
+        .portfolio-tab span {
+            position: relative;
+        }
+
+        .tab-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            background: rgba(138,79,255,0.3);
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .portfolio-tab:hover {
+            border-color: var(--primary);
+            color: var(--light);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(138, 79, 255, 0.25);
+        }
+
+        .portfolio-tab:hover::before {
+            opacity: 0.6;
+        }
+
+        .portfolio-tab.active {
+            border-color: var(--primary);
+            color: var(--light);
+            box-shadow: 0 0 24px rgba(138, 79, 255, 0.45), inset 0 0 20px rgba(138,79,255,0.05);
+            transform: translateY(-2px);
+        }
+
+        .portfolio-tab.active::before {
             opacity: 1;
         }
 
-        .portfolio-overlay h4 {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
+        .portfolio-tab.active .tab-count {
+            background: rgba(0,230,204,0.25);
+            color: var(--accent);
         }
 
-        .portfolio-overlay p {
+        /* ── Graphic Design Sub-tabs ──────────────────────────────────── */
+        .pf-sub-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 28px;
+            padding: 18px 20px;
+            background: rgba(15,12,29,0.6);
+            border: 1px solid rgba(138,79,255,0.15);
+            border-radius: 14px;
+            backdrop-filter: blur(8px);
+        }
+
+        .pf-sub-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 18px;
+            border: 1.5px solid rgba(138,79,255,0.2);
+            border-radius: 30px;
+            background: rgba(25,22,46,0.5);
             color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-
-        .portfolio-3d-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-
-        .portfolio-content {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.175,0.885,0.32,1.275);
             position: relative;
-            z-index: 2;
-            height: 100%;
+            overflow: hidden;
+        }
+
+        .pf-sub-tab::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg,rgba(138,79,255,0.3),rgba(0,230,204,0.15));
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            border-radius: inherit;
+        }
+
+        .pf-sub-tab i, .pf-sub-tab span { position: relative; }
+
+        .pf-sub-tab:hover {
+            border-color: var(--primary);
+            color: var(--light);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 16px rgba(138,79,255,0.2);
+        }
+        .pf-sub-tab:hover::before { opacity: 0.5; }
+
+        .pf-sub-tab.active {
+            border-color: var(--accent);
+            color: var(--light);
+            box-shadow: 0 0 16px rgba(0,230,204,0.35);
+            transform: translateY(-1px);
+        }
+        .pf-sub-tab.active::before { opacity: 1; }
+
+        .pf-sub-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            background: rgba(0,230,204,0.2);
+            border-radius: 9px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent);
+            position: relative;
+        }
+
+        .pf-sub-content {
+            min-height: 200px;
+        }
+
+        /* Stats bar above grid */
+
+        .pf-stats-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding: 14px 20px;
+            background: rgba(25,22,46,0.5);
+            border: 1px solid rgba(138,79,255,0.15);
+            border-radius: 12px;
+            backdrop-filter: blur(6px);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .pf-stats-bar .pf-stat-label {
+            color: var(--gray);
+            font-size: 0.88rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .pf-stats-bar .pf-stat-label strong {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .pf-view-controls {
+            display: flex;
+            gap: 6px;
+        }
+
+        .pf-view-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            border: 1px solid rgba(138,79,255,0.25);
+            background: transparent;
+            color: var(--gray);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+        .pf-view-btn:hover, .pf-view-btn.active {
+            border-color: var(--primary);
+            color: var(--accent);
+            background: rgba(138,79,255,0.12);
+        }
+
+        /* Tab Panels */
+        .portfolio-panel {
+            display: none;
+        }
+
+        .portfolio-panel.active {
+            display: block;
+            animation: panelFadeIn 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes panelFadeIn {
+            from { opacity: 0; transform: translateY(24px) scale(0.98); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Image Grid — CSS columns for natural aspect ratios */
+        .portfolio-grid {
+            columns: 3;
+            column-gap: 18px;
+            contain: layout style;
+        }
+
+        .portfolio-grid.cols-2 { columns: 2; }
+        .portfolio-grid.cols-4 { columns: 4; }
+
+        .portfolio-item {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            break-inside: avoid;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease, border-color 0.35s ease;
+            border: 1px solid rgba(138, 79, 255, 0.12);
+            background: rgba(15, 12, 29, 0.8);
+            display: inline-block;
+            width: 100%;
+            will-change: transform;
+            transform: translateZ(0);
+        }
+
+        .portfolio-item:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 22px 55px rgba(138, 79, 255, 0.35);
+            border-color: rgba(138, 79, 255, 0.6);
+        }
+
+        .portfolio-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .portfolio-item:hover img {
+            transform: scale(1.07);
+        }
+
+        .portfolio-item-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to top,
+                rgba(9,7,20,0.92) 0%,
+                rgba(9,7,20,0.4) 40%,
+                transparent 100%
+            );
+            opacity: 0;
+            transition: opacity 0.35s ease;
             display: flex;
             flex-direction: column;
+            align-items: center;
             justify-content: flex-end;
             padding: 20px;
+            gap: 8px;
+        }
+
+        .portfolio-item:hover .portfolio-item-overlay {
+            opacity: 1;
+        }
+
+        .portfolio-item-overlay .pf-zoom {
+            width: 52px;
+            height: 52px;
+            background: rgba(138,79,255,0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
-            background: rgba(15, 12, 29, 0.5);
+            font-size: 1.1rem;
+            transform: scale(0.5) translateY(10px);
+            opacity: 0;
+            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 20px rgba(138,79,255,0.5);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            translate: -50% -50%;
+        }
+
+        .portfolio-item:hover .pf-zoom {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        /* ---- Pagination ---- */
+        .pf-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 50px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: rgba(15,12,29,0.5);
+            border-radius: 16px;
+            border: 1px solid rgba(138,79,255,0.1);
+            backdrop-filter: blur(8px);
+        }
+
+        .pf-page-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 42px;
+            height: 42px;
+            padding: 0 16px;
+            border-radius: 10px;
+            border: 2px solid rgba(138,79,255,0.25);
+            background: rgba(25,22,46,0.6);
+            color: var(--gray);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(5px);
+            gap: 6px;
+        }
+
+        .pf-page-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            color: var(--light);
+            background: rgba(138,79,255,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(138,79,255,0.2);
+        }
+
+        .pf-page-btn.active {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(138,79,255,0.5), rgba(0,230,204,0.25));
+            color: var(--light);
+            box-shadow: 0 0 18px rgba(138,79,255,0.4);
+            transform: translateY(-1px);
+        }
+
+        .pf-page-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .pf-page-info {
+            color: var(--gray);
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            padding: 0 6px;
+        }
+
+        /* Empty State */
+        .portfolio-empty {
+            text-align: center;
+            padding: 100px 20px;
+            color: var(--gray);
+        }
+
+        .portfolio-empty .empty-icon {
+            font-size: 4.5rem;
+            margin-bottom: 24px;
+            opacity: 0.5;
+            display: block;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .portfolio-empty h4 {
+            font-size: 1.6rem;
+            margin-bottom: 14px;
+            background: linear-gradient(90deg, var(--light), var(--gray));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .portfolio-empty p {
+            font-size: 0.95rem;
+            max-width: 420px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .portfolio-empty code {
+            background: rgba(138,79,255,0.15);
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-family: monospace;
+            color: var(--accent);
+            font-size: 0.85rem;
+        }
+
+        /* Lightbox */
+        .pf-lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 4, 15, 0.97);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(24px);
+        }
+
+        .pf-lightbox.open {
+            display: flex;
+            animation: lbFadeIn 0.25s ease;
+        }
+
+        @keyframes lbFadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .pf-lightbox-img {
+            max-width: 90vw;
+            max-height: 88vh;
+            border-radius: 14px;
+            object-fit: contain;
+            box-shadow: 0 0 80px rgba(138,79,255,0.5), 0 0 160px rgba(0,230,204,0.15);
+            animation: lbZoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes lbZoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to   { transform: scale(1); opacity: 1; }
+        }
+
+        .pf-lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            width: 46px;
+            height: 46px;
+            background: rgba(138,79,255,0.2);
+            border: 2px solid rgba(138,79,255,0.4);
+            border-radius: 50%;
+            color: var(--light);
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+        }
+
+        .pf-lightbox-close:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .pf-lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 52px;
+            height: 52px;
+            background: rgba(138,79,255,0.2);
+            border: 2px solid rgba(138,79,255,0.4);
+            border-radius: 50%;
+            color: var(--light);
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+        }
+
+        .pf-lightbox-nav:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .pf-lightbox-prev { left: 20px; }
+        .pf-lightbox-next { right: 20px; }
+
+        .pf-lightbox-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--light);
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            background: rgba(15,12,29,0.8);
+            padding: 8px 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(138,79,255,0.2);
+        }
+
+        /* Loading shimmer for portfolio items */
+        .pf-loading-grid {
+            columns: 3;
+            column-gap: 18px;
+        }
+        .pf-shimmer {
+            background: linear-gradient(90deg, rgba(138,79,255,0.06) 25%, rgba(138,79,255,0.12) 50%, rgba(138,79,255,0.06) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 16px;
+            break-inside: avoid;
+            margin-bottom: 18px;
+            display: inline-block;
+            width: 100%;
+        }
+        @keyframes shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @media (max-width: 900px) {
+            .portfolio-grid { columns: 2; }
+            .pf-loading-grid { columns: 2; }
+        }
+        @media (max-width: 560px) {
+            .portfolio-grid { columns: 1; }
+            .pf-loading-grid { columns: 1; }
+            .portfolio-tabs { gap: 8px; }
+            .portfolio-tab { padding: 9px 16px; font-size: 0.82rem; }
+            .pf-stats-bar { flex-direction: column; align-items: flex-start; }
         }
 
 
@@ -1724,38 +2249,64 @@
     </section>
 
 
+    <!-- Lightbox Overlay -->
+    <div class="pf-lightbox" id="pfLightbox" role="dialog" aria-modal="true" aria-label="Image lightbox">
+        <button class="pf-lightbox-close" id="pfLightboxClose" title="Close"><i class="fas fa-times"></i></button>
+        <button class="pf-lightbox-nav pf-lightbox-prev" id="pfLightboxPrev" title="Previous"><i class="fas fa-chevron-left"></i></button>
+        <img class="pf-lightbox-img" id="pfLightboxImg" src="" alt="Portfolio image">
+        <button class="pf-lightbox-nav pf-lightbox-next" id="pfLightboxNext" title="Next"><i class="fas fa-chevron-right"></i></button>
+        <div class="pf-lightbox-counter" id="pfLightboxCounter">1 / 1</div>
+    </div>
+
     <section class="portfolio-showcase" id="portfolio">
         <div class="container">
             <div class="section-title">
                 <h2 class="cosmic-title">Cosmic Portfolio</h2>
-                <p>Showcasing our stellar digital solutions and creative expertise</p>
+                <p>Explore our stellar work across every service — tap a category to dive in</p>
             </div>
-            <div class="portfolio-grid">
-                <div class="portfolio-item">
-                    <div class="portfolio-3d-container" id="portfolio-3d-1"></div>
-                    <div class="portfolio-content">
-                        <h4>Galaxy Identity Design</h4>
-                        <p>Complete visual identity for space tech startup</p>
-                    </div>
-                </div>
-                <div class="portfolio-item">
-                    <div class="portfolio-3d-container" id="portfolio-3d-2"></div>
-                    <div class="portfolio-content">
-                        <h4>Cosmic App Design</h4>
-                        <p>Astronomy tracking application UI/UX</p>
-                    </div>
-                </div>
-                <div class="portfolio-item">
-                    <div class="portfolio-3d-container" id="portfolio-3d-3"></div>
-                    <div class="portfolio-content">
-                        <h4>Interstellar Website</h4>
-                        <p>Premium cosmic experience development</p>
-                    </div>
-                </div>
+
+            <!-- Service Tabs -->
+            <div class="portfolio-tabs" id="portfolioTabs">
+                <button class="portfolio-tab active" data-service="graphic-design" id="tab-graphic-design">
+                    <i class="fas fa-palette"></i>
+                    <span>Galaxy Design</span>
+                    <span class="tab-count" id="cnt-graphic-design">—</span>
+                </button>
+                <button class="portfolio-tab" data-service="app-development" id="tab-app-development">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Cosmic App Dev</span>
+                    <span class="tab-count" id="cnt-app-development">—</span>
+                </button>
+                <button class="portfolio-tab" data-service="web-development" id="tab-web-development">
+                    <i class="fas fa-laptop-code"></i>
+                    <span>Interstellar Web</span>
+                    <span class="tab-count" id="cnt-web-development">—</span>
+                </button>
+                <button class="portfolio-tab" data-service="video-editing" id="tab-video-editing">
+                    <i class="fas fa-video"></i>
+                    <span>Universal Video</span>
+                    <span class="tab-count" id="cnt-video-editing">—</span>
+                </button>
+                <button class="portfolio-tab" data-service="vfx-graphics" id="tab-vfx-graphics">
+                    <i class="fas fa-magic"></i>
+                    <span>Nebula VFX</span>
+                    <span class="tab-count" id="cnt-vfx-graphics">—</span>
+                </button>
+                <button class="portfolio-tab" data-service="3d-animation" id="tab-3d-animation">
+                    <i class="fas fa-cube"></i>
+                    <span>Universe Animation</span>
+                    <span class="tab-count" id="cnt-3d-animation">—</span>
+                </button>
             </div>
+
+            <!-- Tab Panels — dynamically populated by JS -->
+            <div class="portfolio-panel active" id="panel-graphic-design"></div>
+            <div class="portfolio-panel" id="panel-app-development"></div>
+            <div class="portfolio-panel" id="panel-web-development"></div>
+            <div class="portfolio-panel" id="panel-video-editing"></div>
+            <div class="portfolio-panel" id="panel-vfx-graphics"></div>
+            <div class="portfolio-panel" id="panel-3d-animation"></div>
         </div>
-
-
     </section>
 
 
@@ -2454,6 +3005,63 @@
             initFooter3D();
         }
 
+        /* ── Footer 3D: subtle star-field canvas in the footer background ── */
+        function initFooter3D() {
+            var container = document.getElementById('footer-3d');
+            if (!container) return;
+
+            var scene    = new THREE.Scene();
+            var camera   = new THREE.PerspectiveCamera(75, window.innerWidth / 300, 0.1, 1000);
+            var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false });
+            renderer.setSize(window.innerWidth, 300);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+            container.appendChild(renderer.domElement);
+            container.style.cssText = 'position:absolute;bottom:0;left:0;width:100%;height:300px;overflow:hidden;pointer-events:none;opacity:0.4;';
+
+            /* small star-field */
+            var geo = new THREE.BufferGeometry();
+            var count = 600;
+            var pos = new Float32Array(count * 3);
+            for (var i = 0; i < count; i++) {
+                pos[i * 3]     = (Math.random() - 0.5) * 60;
+                pos[i * 3 + 1] = (Math.random() - 0.5) * 20;
+                pos[i * 3 + 2] = (Math.random() - 0.5) * 30;
+            }
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            var mat = new THREE.PointsMaterial({ size: 0.12, color: 0xaaaaff, transparent: true, opacity: 0.7 });
+            scene.add(new THREE.Points(geo, mat));
+
+            camera.position.z = 10;
+
+            /* two accent rings */
+            var ring1 = new THREE.Mesh(
+                new THREE.TorusGeometry(3, 0.04, 8, 60),
+                new THREE.MeshBasicMaterial({ color: 0x8a4fff, transparent: true, opacity: 0.3 })
+            );
+            ring1.rotation.x = 1.2;
+            scene.add(ring1);
+
+            var ring2 = new THREE.Mesh(
+                new THREE.TorusGeometry(5, 0.03, 8, 80),
+                new THREE.MeshBasicMaterial({ color: 0x00e6cc, transparent: true, opacity: 0.2 })
+            );
+            ring2.rotation.x = 0.8;
+            scene.add(ring2);
+
+            (function animate() {
+                requestAnimationFrame(animate);
+                ring1.rotation.z += 0.003;
+                ring2.rotation.z -= 0.002;
+                renderer.render(scene, camera);
+            })();
+
+            window.addEventListener('resize', function() {
+                camera.aspect = window.innerWidth / 300;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, 300);
+            });
+        }
+
 
         function initHero3D() {
             const scene = new THREE.Scene();
@@ -3116,6 +3724,779 @@
                 optionsContainer.style.display = 'none';
             }
         });
+    </script>
+
+
+    <!-- ===== PORTFOLIO GALLERY SCRIPT ===== -->
+    <script>
+    (function () {
+        'use strict';
+
+        // ── CONFIG ────────────────────────────────────────────────────────
+        var PER_PAGE = 12;
+        var SERVICE_IDS = [
+            'graphic-design', 'app-development', 'web-development',
+            'video-editing',  'vfx-graphics',    '3d-animation'
+        ];
+
+        // ── SHARED STATE ──────────────────────────────────────────────────
+        var serviceState  = {}; // id → { images, page }
+        var manifestCache = {}; // id → Promise<string[]>
+        var loaded        = {}; // id → bool (tab ever activated)
+
+        // ── LIGHTBOX ──────────────────────────────────────────────────────
+        var lbImages = [], lbIndex = 0;
+        var lightbox  = document.getElementById('pfLightbox');
+        var lbImg     = document.getElementById('pfLightboxImg');
+        var lbCounter = document.getElementById('pfLightboxCounter');
+        var lbClose   = document.getElementById('pfLightboxClose');
+        var lbPrev    = document.getElementById('pfLightboxPrev');
+        var lbNext    = document.getElementById('pfLightboxNext');
+
+        function openLightbox(images, index) {
+            lbImages = images;
+            lbIndex  = Math.max(0, Math.min(index, images.length - 1));
+            showLbImage();
+            lightbox.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() {
+            lightbox.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        function showLbImage() {
+            if (!lbImages.length) return;
+            lbImg.src = lbImages[lbIndex];
+            lbCounter.textContent = (lbIndex + 1) + ' / ' + lbImages.length;
+            lbPrev.style.display = lbImages.length > 1 ? 'flex' : 'none';
+            lbNext.style.display = lbImages.length > 1 ? 'flex' : 'none';
+        }
+        if (lbClose)  lbClose.addEventListener('click', closeLightbox);
+        if (lightbox) lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox) closeLightbox();
+        });
+        if (lbPrev) lbPrev.addEventListener('click', function() {
+            lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length;
+            showLbImage();
+        });
+        if (lbNext) lbNext.addEventListener('click', function() {
+            lbIndex = (lbIndex + 1) % lbImages.length;
+            showLbImage();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (!lightbox || !lightbox.classList.contains('open')) return;
+            if (e.key === 'Escape')     closeLightbox();
+            if (e.key === 'ArrowLeft')  { lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length; showLbImage(); }
+            if (e.key === 'ArrowRight') { lbIndex = (lbIndex + 1) % lbImages.length; showLbImage(); }
+        });
+
+        // ── FISHER-YATES SHUFFLE ──────────────────────────────────────────
+        // Returns a NEW shuffled copy each call — does not mutate original.
+        function shuffle(arr) {
+            var a = arr.slice();
+            for (var i = a.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var t = a[i]; a[i] = a[j]; a[j] = t;
+            }
+            return a;
+        }
+
+        // ── MANIFEST FETCH (CACHED PROMISE) ───────────────────────────────
+        // Caches the fetch promise; returns shuffled list each resolve call.
+        // NOTE: shuffle happens AFTER cache resolves so each tab visit gets
+        //       a fresh order without re-fetching.
+        function fetchManifest(serviceId) {
+            if (manifestCache[serviceId]) return manifestCache[serviceId];
+            manifestCache[serviceId] = fetch('portfolio/' + serviceId + '/manifest.json')
+                .then(function(r) {
+                    if (!r.ok) throw new Error('no manifest');
+                    return r.json();
+                })
+                .then(function(data) {
+                    var list = Array.isArray(data) ? data : (data.images || []);
+                    return list.map(function(f) { return 'portfolio/' + serviceId + '/' + f; });
+                })
+                .catch(function() { return []; });
+            return manifestCache[serviceId];
+        }
+
+        // ── IMAGE PRE-WARMING ─────────────────────────────────────────────
+        function warmImage(src) {
+            var img = new Image();
+            img.src = src;
+            return typeof img.decode === 'function'
+                ? img.decode().catch(function() {})
+                : Promise.resolve();
+        }
+        function warmFirstPage(serviceId) {
+            fetchManifest(serviceId).then(function(srcs) {
+                srcs.slice(0, PER_PAGE).forEach(function(src, i) {
+                    setTimeout(function() { warmImage(src); }, i * 30);
+                });
+            });
+        }
+
+        // ── PREFETCH ON IDLE ──────────────────────────────────────────────
+        function prefetchAll() {
+            SERVICE_IDS.forEach(function(id, i) {
+                setTimeout(function() {
+                    fetchManifest(id).then(function(srcs) { updateTabCount(id, srcs.length); });
+                }, 200 + i * 150);
+            });
+        }
+        if (typeof requestIdleCallback === 'function') {
+            requestIdleCallback(prefetchAll, { timeout: 2000 });
+        } else {
+            setTimeout(prefetchAll, 800);
+        }
+
+        // Warm first tab immediately
+        setTimeout(function() { warmFirstPage('graphic-design'); }, 600);
+
+        // Warm all tabs when portfolio is near viewport
+        var portfolioSection = document.getElementById('portfolio');
+        if (portfolioSection && typeof IntersectionObserver !== 'undefined') {
+            var warmed = false;
+            var obs = new IntersectionObserver(function(entries) {
+                if (entries[0].isIntersecting && !warmed) {
+                    warmed = true; obs.disconnect();
+                    SERVICE_IDS.slice(1).forEach(function(id, i) {
+                        setTimeout(function() { warmFirstPage(id); }, i * 200);
+                    });
+                }
+            }, { rootMargin: '100% 0px' });
+            obs.observe(portfolioSection);
+        }
+
+        // ── TAB COUNT BADGE ───────────────────────────────────────────────
+        function updateTabCount(serviceId, count) {
+            var el = document.getElementById('cnt-' + serviceId);
+            if (el) el.textContent = count;
+        }
+
+        // ── RENDER PAGE ───────────────────────────────────────────────────
+        function renderPage(serviceId) {
+            var panel = document.getElementById('panel-' + serviceId);
+            if (!panel) return;
+
+            var state = serviceState[serviceId];
+            if (!state) return;
+
+            // Snapshot page NOW — avoid stale reads during async callbacks
+            var images     = state.images;          // already shuffled
+            var page       = state.page;
+            var total      = images.length;
+            var totalPages = Math.ceil(total / PER_PAGE);
+            var start      = page * PER_PAGE;
+            var slice      = images.slice(start, start + PER_PAGE);
+            var heights    = [200, 280, 180, 320, 240, 200, 260, 220, 300, 180, 240, 200];
+
+            // Tag this render so stale async callbacks from a PREVIOUS render
+            // know to discard themselves when the panel has been replaced.
+            var renderId = Date.now() + '-' + Math.random();
+            panel.dataset.renderId = renderId;
+
+            // ── Commit skeleton to DOM immediately ────────────────────────
+            var frag = document.createDocumentFragment();
+
+            // Stats bar
+            var shownEnd = Math.min(total, start + slice.length);
+            var statsBar = document.createElement('div');
+            statsBar.className = 'pf-stats-bar';
+            statsBar.innerHTML =
+                '<span class="pf-stat-label">Showing <strong>' + (start + 1) + '&ndash;' + shownEnd + '</strong> of <strong>' + total + '</strong> items</span>' +
+                '<div class="pf-view-controls">' +
+                    '<button class="pf-view-btn active" data-cols="3" title="3 columns"><i class="fas fa-th"></i></button>' +
+                    '<button class="pf-view-btn" data-cols="2" title="2 columns"><i class="fas fa-th-large"></i></button>' +
+                '</div>';
+            frag.appendChild(statsBar);
+
+            // Grid wrapper
+            var grid = document.createElement('div');
+            grid.className = 'portfolio-grid';
+            frag.appendChild(grid);
+
+            // Shimmer placeholders
+            var placeholders = slice.map(function(_, i) {
+                var ph = document.createElement('div');
+                ph.className = 'pf-shimmer';
+                ph.style.height = heights[i % heights.length] + 'px';
+                grid.appendChild(ph);
+                return ph;
+            });
+
+            // Pagination placeholder (keeps vertical space stable)
+            var paginationSlot = null;
+            if (totalPages > 1) {
+                paginationSlot = document.createElement('div');
+                paginationSlot.className = 'pf-pagination-slot';
+                frag.appendChild(paginationSlot);
+            }
+
+            // Paint skeleton now — users see layout instantly
+            panel.innerHTML = '';
+            panel.appendChild(frag);
+
+            // Wire column switcher
+            statsBar.querySelectorAll('.pf-view-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var cols = btn.dataset.cols;
+                    grid.className = 'portfolio-grid' + (cols === '2' ? ' cols-2' : '');
+                    statsBar.querySelectorAll('.pf-view-btn').forEach(function(b) {
+                        b.classList.toggle('active', b === btn);
+                    });
+                });
+            });
+
+            // ── Progressive streaming — swap each placeholder as it decodes ─
+            var doneCount  = 0;
+            var totalSlots = slice.length;
+
+            function onAllDone() {
+                // Guard: abort if the panel has been replaced by a newer render
+                if (panel.dataset.renderId !== renderId) return;
+                if (totalPages > 1 && paginationSlot && paginationSlot.parentNode === panel) {
+                    paginationSlot.parentNode.replaceChild(
+                        buildPagination(serviceId, page, totalPages, total),
+                        paginationSlot
+                    );
+                }
+                // Pre-warm next page
+                var nextStart = (page + 1) * PER_PAGE;
+                if (nextStart < total) {
+                    var nextSlice = images.slice(nextStart, nextStart + PER_PAGE);
+                    (typeof requestIdleCallback === 'function' ? requestIdleCallback : function(fn) { setTimeout(fn, 800); })(function() {
+                        nextSlice.forEach(function(src) { warmImage(src); });
+                    });
+                }
+            }
+
+            slice.forEach(function(src, i) {
+                var globalIdx = start + i;
+
+                // ── KEY FIX: NEVER use loading="lazy" on a new Image() that isn't
+                // in the DOM yet. The browser's lazy-load heuristic requires the
+                // element to be in/near the viewport inside the document — an off-DOM
+                // image with loading="lazy" simply never fetches. Use "eager" always.
+                var img      = new Image();
+                img.alt      = 'Portfolio item ' + (globalIdx + 1);
+                img.decoding = 'async';
+                // Do NOT set loading attribute — let the browser fetch immediately.
+
+                function swapIn(imgEl, slot, gIdx) {
+                    // Abort if this panel was replaced while we were loading
+                    if (panel.dataset.renderId !== renderId) return;
+
+                    imgEl.style.cssText = 'opacity:0;transition:opacity 0.45s ease;display:block;width:100%;height:auto;';
+
+                    var overlay = document.createElement('div');
+                    overlay.className = 'portfolio-item-overlay';
+                    overlay.innerHTML = '<div class="pf-zoom"><i class="fas fa-expand"></i></div>';
+
+                    var item = document.createElement('div');
+                    item.className = 'portfolio-item';
+                    item.appendChild(imgEl);
+                    item.appendChild(overlay);
+
+                    item.addEventListener('click', (function(imgs, idx) {
+                        return function() { openLightbox(imgs, idx); };
+                    })(images, gIdx));
+
+                    // Atomic swap: shimmer → real card
+                    var ph = placeholders[slot];
+                    if (ph && ph.parentNode === grid) {
+                        grid.replaceChild(item, ph);
+                    } else {
+                        grid.appendChild(item);
+                    }
+
+                    // Trigger fade-in on the next paint frame
+                    requestAnimationFrame(function() {
+                        requestAnimationFrame(function() { imgEl.style.opacity = '1'; });
+                    });
+                }
+
+                function markDone() {
+                    doneCount++;
+                    if (doneCount >= totalSlots) onAllDone();
+                }
+
+                // onload: image bytes are ready → optionally decode off-thread, then swap in
+                img.onload = (function(imgEl, slot, gIdx) {
+                    return function() {
+                        if (typeof imgEl.decode === 'function') {
+                            // decode() moves raster work off the main thread for a jank-free swap
+                            imgEl.decode().then(function() {
+                                swapIn(imgEl, slot, gIdx);
+                                markDone();
+                            }).catch(function() {
+                                // decode failed but image loaded — show it anyway
+                                swapIn(imgEl, slot, gIdx);
+                                markDone();
+                            });
+                        } else {
+                            swapIn(imgEl, slot, gIdx);
+                            markDone();
+                        }
+                    };
+                })(img, i, globalIdx);
+
+                // onerror: network/404 failure — remove shimmer, show broken-image placeholder
+                img.onerror = (function(slot) {
+                    return function() {
+                        if (panel.dataset.renderId !== renderId) return;
+                        var ph = placeholders[slot];
+                        if (ph && ph.parentNode === grid) {
+                            var errEl = document.createElement('div');
+                            errEl.className = 'pf-shimmer';
+                            errEl.style.cssText = 'display:flex;align-items:center;justify-content:center;color:rgba(138,79,255,0.4);font-size:2rem;';
+                            errEl.innerHTML = '<i class="fas fa-image"></i>';
+                            grid.replaceChild(errEl, ph);
+                        }
+                        markDone();
+                    };
+                })(i);
+
+                // Set src LAST — after handlers are attached — so onload/onerror always fire
+                img.src = src;
+            });
+
+            // Safety net: in case some callbacks never fire (browser quirk),
+            // force-complete after 10 s so pagination always appears.
+            setTimeout(function() {
+                if (panel.dataset.renderId === renderId && doneCount < totalSlots) {
+                    doneCount = totalSlots;
+                    onAllDone();
+                }
+            }, 10000);
+        }
+
+        // ── PAGINATION ────────────────────────────────────────────────────
+        function buildPagination(serviceId, page, totalPages, total) {
+            var bar = document.createElement('div');
+            bar.className = 'pf-pagination';
+
+            var prev = document.createElement('button');
+            prev.className = 'pf-page-btn';
+            prev.innerHTML = '<i class="fas fa-chevron-left"></i>&nbsp;Prev';
+            prev.disabled  = page === 0;
+            prev.addEventListener('click', function() {
+                var cur = serviceState[serviceId] ? serviceState[serviceId].page : 0;
+                if (cur > 0) { serviceState[serviceId].page = cur - 1; renderPage(serviceId); scrollToPortfolio(); }
+            });
+            bar.appendChild(prev);
+
+            var maxBtns = 7;
+            var startP = Math.max(0, page - Math.floor(maxBtns / 2));
+            var endP   = Math.min(totalPages - 1, startP + maxBtns - 1);
+            if (endP - startP < maxBtns - 1) startP = Math.max(0, endP - maxBtns + 1);
+
+            if (startP > 0) {
+                bar.appendChild(makePageBtn(serviceId, 0, page));
+                if (startP > 1) bar.appendChild(makeEllipsis());
+            }
+            for (var p = startP; p <= endP; p++) bar.appendChild(makePageBtn(serviceId, p, page));
+            if (endP < totalPages - 1) {
+                if (endP < totalPages - 2) bar.appendChild(makeEllipsis());
+                bar.appendChild(makePageBtn(serviceId, totalPages - 1, page));
+            }
+
+            var next = document.createElement('button');
+            next.className = 'pf-page-btn';
+            next.innerHTML = 'Next&nbsp;<i class="fas fa-chevron-right"></i>';
+            next.disabled  = page >= totalPages - 1;
+            next.addEventListener('click', function() {
+                var cur = serviceState[serviceId] ? serviceState[serviceId].page : 0;
+                if (cur < totalPages - 1) { serviceState[serviceId].page = cur + 1; renderPage(serviceId); scrollToPortfolio(); }
+            });
+            bar.appendChild(next);
+
+            return bar;
+        }
+
+        function makePageBtn(serviceId, p, currentPage) {
+            var btn = document.createElement('button');
+            btn.className  = 'pf-page-btn' + (p === currentPage ? ' active' : '');
+            btn.textContent = p + 1;
+            if (p !== currentPage) {
+                btn.addEventListener('click', (function(pg) {
+                    return function() { serviceState[serviceId].page = pg; renderPage(serviceId); scrollToPortfolio(); };
+                })(p));
+            }
+            return btn;
+        }
+
+        function makeEllipsis() {
+            var s = document.createElement('span');
+            s.className = 'pf-page-info';
+            s.textContent = '\u2026';
+            return s;
+        }
+
+        function scrollToPortfolio() {
+            var s = document.getElementById('portfolio');
+            if (s) window.scrollTo({ top: s.offsetTop - 90, behavior: 'smooth' });
+        }
+
+        // ── EMPTY STATE ───────────────────────────────────────────────────
+        function renderEmpty(serviceId) {
+            var panel = document.getElementById('panel-' + serviceId);
+            if (!panel) return;
+            panel.innerHTML =
+                '<div class="portfolio-empty">' +
+                    '<i class="fas fa-images empty-icon"></i>' +
+                    '<h4>No Images Yet</h4>' +
+                    '<p>Add your work to <code>portfolio/' + serviceId + '/</code> and list filenames in <code>manifest.json</code>.</p>' +
+                '</div>';
+        }
+
+        // ── GRAPHIC DESIGN SUB-TABS ────────────────────────────────────────
+        var GD_SUBS = [
+            { id: 'logos',    label: 'Logos',    icon: 'fas fa-star' },
+            { id: 'posters',  label: 'Posters',  icon: 'fas fa-image' },
+            { id: 'mockups',  label: 'Mockups',  icon: 'fas fa-cube' }
+        ];
+
+        // Virtual serviceId for a graphic-design sub-category
+        function gdSubId(sub) { return 'graphic-design__' + sub; }
+
+        // fetchManifest supports sub-paths via serviceId containing '__'
+        // We patch the path resolver below.
+        function fetchGdSubManifest(sub) {
+            var key = gdSubId(sub);
+            if (manifestCache[key]) return manifestCache[key];
+            manifestCache[key] = fetch('portfolio/graphic-design/' + sub + '/manifest.json')
+                .then(function(r) {
+                    if (!r.ok) throw new Error('no manifest');
+                    return r.json();
+                })
+                .then(function(data) {
+                    var list = Array.isArray(data) ? data : (data.images || []);
+                    return list.map(function(f) {
+                        return 'portfolio/graphic-design/' + sub + '/' + f;
+                    });
+                })
+                .catch(function() { return []; });
+            return manifestCache[key];
+        }
+
+        // Renders the 3-sub-tab UI inside panel-graphic-design
+        function renderGraphicDesignPanel(activeSub) {
+            activeSub = activeSub || GD_SUBS[0].id;
+            var panel = document.getElementById('panel-graphic-design');
+            if (!panel) return;
+
+            // ── Sub-tab bar ──────────────────────────────────────────────
+            var tabBar = document.createElement('div');
+            tabBar.className = 'pf-sub-tabs';
+
+            GD_SUBS.forEach(function(sub) {
+                var btn = document.createElement('button');
+                btn.className = 'pf-sub-tab' + (sub.id === activeSub ? ' active' : '');
+                btn.dataset.sub = sub.id;
+                btn.innerHTML =
+                    '<i class="' + sub.icon + '"></i>' +
+                    '<span>' + sub.label + '</span>' +
+                    '<span class="pf-sub-count" id="gd-cnt-' + sub.id + '">—</span>';
+                tabBar.appendChild(btn);
+            });
+
+            // ── Content area ─────────────────────────────────────────────
+            var content = document.createElement('div');
+            content.className = 'pf-sub-content';
+            content.id = 'pf-sub-content';
+
+            panel.innerHTML = '';
+            panel.appendChild(tabBar);
+            panel.appendChild(content);
+
+            // Wire sub-tab clicks
+            tabBar.querySelectorAll('.pf-sub-tab').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    tabBar.querySelectorAll('.pf-sub-tab').forEach(function(b) {
+                        b.classList.toggle('active', b === btn);
+                    });
+                    loadGdSub(btn.dataset.sub);
+                });
+            });
+
+            // Prefetch counts for all sub-categories
+            GD_SUBS.forEach(function(sub) {
+                fetchGdSubManifest(sub.id).then(function(srcs) {
+                    var el = document.getElementById('gd-cnt-' + sub.id);
+                    if (el) el.textContent = srcs.length;
+                });
+            });
+
+            // Load the active sub-category
+            loadGdSub(activeSub);
+        }
+
+        // Loads images for one sub-category into #pf-sub-content
+        function loadGdSub(sub) {
+            fetchGdSubManifest(sub).then(function(srcs) {
+                var subPanel = document.getElementById('pf-sub-content');
+                if (!subPanel) return;
+
+                // Use a virtual panel that points into #pf-sub-content
+                var key = gdSubId(sub);
+                if (srcs.length === 0) {
+                    subPanel.innerHTML =
+                        '<div class="portfolio-empty">' +
+                        '<i class="fas fa-images empty-icon"></i>' +
+                        '<h4>No ' + sub.charAt(0).toUpperCase() + sub.slice(1) + ' Yet</h4>' +
+                        '<p>Add images to <code>portfolio/graphic-design/' + sub + '/</code> and create <code>manifest.json</code>.</p>' +
+                        '</div>';
+                } else {
+                    serviceState[key] = { images: shuffle(srcs), page: 0 };
+                    renderSubPage(key, subPanel);
+                }
+            });
+        }
+
+        // Like renderPage but targets an arbitrary container element
+        function renderSubPage(key, container) {
+            var state = serviceState[key];
+            if (!state) return;
+
+            var images     = state.images;
+            var page       = state.page;
+            var total      = images.length;
+            var totalPages = Math.ceil(total / PER_PAGE);
+            var start      = page * PER_PAGE;
+            var slice      = images.slice(start, start + PER_PAGE);
+            var heights    = [200,280,180,320,240,200,260,220,300,180,240,200];
+
+            var renderId = Date.now() + '-' + Math.random();
+            container.dataset.renderId = renderId;
+
+            var frag = document.createDocumentFragment();
+
+            // Stats bar
+            var shownEnd = Math.min(total, start + slice.length);
+            var statsBar = document.createElement('div');
+            statsBar.className = 'pf-stats-bar';
+            statsBar.innerHTML =
+                '<span class="pf-stat-label">Showing <strong>' + (start+1) + '&ndash;' + shownEnd + '</strong> of <strong>' + total + '</strong> items</span>' +
+                '<div class="pf-view-controls">' +
+                    '<button class="pf-view-btn active" data-cols="3" title="3 columns"><i class="fas fa-th"></i></button>' +
+                    '<button class="pf-view-btn" data-cols="2" title="2 columns"><i class="fas fa-th-large"></i></button>' +
+                '</div>';
+            frag.appendChild(statsBar);
+
+            var grid = document.createElement('div');
+            grid.className = 'portfolio-grid';
+            frag.appendChild(grid);
+
+            var placeholders = slice.map(function(_, i) {
+                var ph = document.createElement('div');
+                ph.className = 'pf-shimmer';
+                ph.style.height = heights[i % heights.length] + 'px';
+                grid.appendChild(ph);
+                return ph;
+            });
+
+            var paginationSlot = null;
+            if (totalPages > 1) {
+                paginationSlot = document.createElement('div');
+                paginationSlot.className = 'pf-pagination-slot';
+                frag.appendChild(paginationSlot);
+            }
+
+            container.innerHTML = '';
+            container.appendChild(frag);
+
+            // Column switcher
+            statsBar.querySelectorAll('.pf-view-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    grid.className = 'portfolio-grid' + (btn.dataset.cols === '2' ? ' cols-2' : '');
+                    statsBar.querySelectorAll('.pf-view-btn').forEach(function(b) {
+                        b.classList.toggle('active', b === btn);
+                    });
+                });
+            });
+
+            var doneCount  = 0;
+            var totalSlots = slice.length;
+
+            function onSubDone() {
+                if (container.dataset.renderId !== renderId) return;
+                if (totalPages > 1 && paginationSlot && paginationSlot.parentNode === container) {
+                    // Build pagination that navigates the sub-panel
+                    var bar = buildSubPagination(key, container, page, totalPages, total);
+                    paginationSlot.parentNode.replaceChild(bar, paginationSlot);
+                }
+            }
+
+            function swapSubIn(imgEl, slot, gIdx) {
+                if (container.dataset.renderId !== renderId) return;
+                imgEl.style.cssText = 'opacity:0;transition:opacity 0.45s ease;display:block;width:100%;height:auto;';
+                var overlay = document.createElement('div');
+                overlay.className = 'portfolio-item-overlay';
+                overlay.innerHTML = '<div class="pf-zoom"><i class="fas fa-expand"></i></div>';
+                var item = document.createElement('div');
+                item.className = 'portfolio-item';
+                item.appendChild(imgEl);
+                item.appendChild(overlay);
+                item.addEventListener('click', (function(imgs, idx) {
+                    return function() { openLightbox(imgs, idx); };
+                })(images, gIdx));
+                var ph = placeholders[slot];
+                if (ph && ph.parentNode === grid) { grid.replaceChild(item, ph); }
+                else { grid.appendChild(item); }
+                requestAnimationFrame(function() {
+                    requestAnimationFrame(function() { imgEl.style.opacity = '1'; });
+                });
+            }
+
+            function markSubDone() {
+                doneCount++;
+                if (doneCount >= totalSlots) onSubDone();
+            }
+
+            slice.forEach(function(src, i) {
+                var globalIdx = start + i;
+                var img = new Image();
+                img.alt      = 'Design item ' + (globalIdx + 1);
+                img.decoding = 'async';
+
+                img.onload = (function(imgEl, slot, gIdx) {
+                    return function() {
+                        if (typeof imgEl.decode === 'function') {
+                            imgEl.decode().then(function() { swapSubIn(imgEl,slot,gIdx); markSubDone(); })
+                                          .catch(function() { swapSubIn(imgEl,slot,gIdx); markSubDone(); });
+                        } else {
+                            swapSubIn(imgEl,slot,gIdx); markSubDone();
+                        }
+                    };
+                })(img, i, globalIdx);
+
+                img.onerror = (function(slot) {
+                    return function() {
+                        if (container.dataset.renderId !== renderId) return;
+                        var ph = placeholders[slot];
+                        if (ph && ph.parentNode === grid) {
+                            var errEl = document.createElement('div');
+                            errEl.className = 'pf-shimmer';
+                            errEl.style.cssText = 'display:flex;align-items:center;justify-content:center;color:rgba(138,79,255,0.4);font-size:2rem;';
+                            errEl.innerHTML = '<i class="fas fa-image"></i>';
+                            grid.replaceChild(errEl, ph);
+                        }
+                        markSubDone();
+                    };
+                })(i);
+
+                img.src = src;
+            });
+
+            setTimeout(function() {
+                if (container.dataset.renderId === renderId && doneCount < totalSlots) {
+                    doneCount = totalSlots; onSubDone();
+                }
+            }, 10000);
+        }
+
+        function buildSubPagination(key, container, page, totalPages, total) {
+            var bar = document.createElement('div');
+            bar.className = 'pf-pagination';
+
+            var prev = document.createElement('button');
+            prev.className = 'pf-page-btn';
+            prev.innerHTML = '<i class="fas fa-chevron-left"></i>&nbsp;Prev';
+            prev.disabled  = page === 0;
+            prev.addEventListener('click', function() {
+                var cur = serviceState[key] ? serviceState[key].page : 0;
+                if (cur > 0) { serviceState[key].page = cur - 1; renderSubPage(key, container); scrollToPortfolio(); }
+            });
+            bar.appendChild(prev);
+
+            var maxBtns = 7;
+            var startP = Math.max(0, page - Math.floor(maxBtns/2));
+            var endP   = Math.min(totalPages-1, startP + maxBtns - 1);
+            if (endP - startP < maxBtns - 1) startP = Math.max(0, endP - maxBtns + 1);
+            if (startP > 0) { bar.appendChild(makeSubPageBtn(key,container,0,page)); if (startP>1) bar.appendChild(makeEllipsis()); }
+            for (var p = startP; p <= endP; p++) bar.appendChild(makeSubPageBtn(key,container,p,page));
+            if (endP < totalPages-1) { if (endP<totalPages-2) bar.appendChild(makeEllipsis()); bar.appendChild(makeSubPageBtn(key,container,totalPages-1,page)); }
+
+            var next = document.createElement('button');
+            next.className = 'pf-page-btn';
+            next.innerHTML = 'Next&nbsp;<i class="fas fa-chevron-right"></i>';
+            next.disabled  = page >= totalPages-1;
+            next.addEventListener('click', function() {
+                var cur = serviceState[key] ? serviceState[key].page : 0;
+                if (cur < totalPages-1) { serviceState[key].page = cur+1; renderSubPage(key, container); scrollToPortfolio(); }
+            });
+            bar.appendChild(next);
+            return bar;
+        }
+
+        function makeSubPageBtn(key, container, p, currentPage) {
+            var btn = document.createElement('button');
+            btn.className = 'pf-page-btn' + (p === currentPage ? ' active' : '');
+            btn.textContent = p + 1;
+            if (p !== currentPage) {
+                btn.addEventListener('click', (function(pg) {
+                    return function() { serviceState[key].page = pg; renderSubPage(key, container); scrollToPortfolio(); };
+                })(p));
+            }
+            return btn;
+        }
+
+        // ── LOAD SERVICE (first-time tab activation) ───────────────────────
+        function loadService(serviceId) {
+            if (serviceId === 'graphic-design') {
+                // Special: render sub-tabs instead of a flat grid
+                renderGraphicDesignPanel();
+                // Still update the main tab badge with total across all sub-cats
+                Promise.all(GD_SUBS.map(function(s) { return fetchGdSubManifest(s.id); }))
+                    .then(function(results) {
+                        var total = results.reduce(function(sum, arr) { return sum + arr.length; }, 0);
+                        updateTabCount('graphic-design', total);
+                    });
+                return;
+            }
+            fetchManifest(serviceId).then(function(srcs) {
+                updateTabCount(serviceId, srcs.length);
+                if (srcs.length === 0) {
+                    renderEmpty(serviceId);
+                } else {
+                    // Shuffle fresh on every load so order differs each visit
+                    serviceState[serviceId] = { images: shuffle(srcs), page: 0 };
+                    renderPage(serviceId);
+                }
+            });
+        }
+
+        // ── TAB SWITCHING ─────────────────────────────────────────────────
+        function activateTab(serviceId) {
+            document.querySelectorAll('.portfolio-tab').forEach(function(btn) {
+                btn.classList.toggle('active', btn.dataset.service === serviceId);
+            });
+            document.querySelectorAll('.portfolio-panel').forEach(function(p) {
+                p.classList.remove('active');
+            });
+            var panel = document.getElementById('panel-' + serviceId);
+            if (panel) panel.classList.add('active');
+
+            if (!loaded[serviceId]) {
+                loaded[serviceId] = true;
+                loadService(serviceId);
+            }
+        }
+
+        // Wire tab buttons
+        document.querySelectorAll('.portfolio-tab').forEach(function(btn) {
+            btn.addEventListener('click', function() { activateTab(btn.dataset.service); });
+        });
+
+        // Initialise first tab exactly once (avoid double-fire from DOMContentLoaded + readyState check)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() { activateTab('graphic-design'); });
+        } else {
+            activateTab('graphic-design');
+        }
+
+    }());
     </script>
 
 
