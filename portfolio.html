@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Portfolio | SEVEN'S STUDIOS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/ati.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="c192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="c512.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="f16.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="f32.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #8a4fff;
+            --primary-dark: #6b2beb;
+            --secondary: #ff4f9a;
+            --accent: #00e6cc;
+            --dark: #0f0c1d;
+            --darker: #090714;
+            --light: #f0f0ff;
+            --gray: #a0a0c0;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+            --glow: 0 0 25px rgba(138, 79, 255, 0.6);
+            --glass: rgba(25, 22, 46, 0.65);
+            --cosmic-blue: #0c0b1d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--cosmic-blue) 0%, #1a1a2e 50%, var(--cosmic-blue) 100%);
+            color: var(--light);
+            line-height: 1.7;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ── Canvas Starfield ────────────────────────────────────────── */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* ── Header Navbar ────────────────────────────────────────────── */
+        header {
+            background: rgba(15, 12, 29, 0.85);
+            backdrop-filter: blur(12px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(138, 79, 255, 0.15);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 26px;
+            font-weight: 700;
+            text-decoration: none;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--accent);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .mobile-toggle {
+            display: none;
+            font-size: 24px;
+            color: var(--light);
+            cursor: pointer;
+        }
+
+        /* ── Portfolio Hero ──────────────────────────────────────────── */
+        .pf-hero {
+            padding: 150px 0 60px;
+            text-align: center;
+            position: relative;
+        }
+
+        .pf-hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            background: rgba(138, 79, 255, 0.12);
+            border: 1px solid rgba(138, 79, 255, 0.3);
+            border-radius: 30px;
+            color: var(--accent);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(138, 79, 255, 0.2);
+        }
+
+        .pf-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #fff 0%, var(--primary) 50%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .pf-subtitle {
+            font-size: 1.15rem;
+            color: var(--gray);
+            max-width: 680px;
+            margin: 0 auto 35px;
+        }
+
+        /* ── Reroll / Shuffle Floating Control ───────────────────────── */
+        .shuffle-control {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, rgba(138, 79, 255, 0.3), rgba(0, 230, 204, 0.2));
+            border: 1px solid rgba(0, 230, 204, 0.4);
+            border-radius: 50px;
+            color: var(--light);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 0 20px rgba(138, 79, 255, 0.3);
+        }
+
+        .shuffle-control:hover {
+            transform: translateY(-3px) scale(1.03);
+            border-color: var(--accent);
+            box-shadow: 0 0 30px rgba(0, 230, 204, 0.6);
+            background: linear-gradient(135deg, rgba(138, 79, 255, 0.5), rgba(0, 230, 204, 0.35));
+        }
+
+        .shuffle-control i {
+            transition: transform 0.6s ease;
+        }
+
+        .shuffle-control:hover i {
+            transform: rotate(180deg);
+        }
+
+        /* ── ULTRA-SIMPLE TEXT SECTOR FILTER ── */
+        .space-selector-section {
+            margin-bottom: 35px;
+        }
+
+        .space-pods-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .space-pod {
+            padding: 10px 22px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 25px;
+            color: rgba(255, 255, 255, 0.75);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(8px);
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .space-pod:hover {
+            color: #ffffff;
+            border-color: var(--accent);
+            background: rgba(138, 79, 255, 0.18);
+            transform: translateY(-2px);
+        }
+
+        .space-pod.active {
+            background: var(--accent);
+            color: var(--darker);
+            border-color: var(--accent);
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(0, 230, 204, 0.4);
+        }
+
+        /* ── 6-FEATURED SHOWCASE GRID (1 PHOTO PER SERVICE) ─────────── */
+        .showcase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(138, 79, 255, 0.2);
+        }
+
+        .showcase-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .showcase-title-wrap h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+        }
+
+        .showcase-count-badge {
+            padding: 4px 12px;
+            background: rgba(0, 230, 204, 0.15);
+            border: 1px solid var(--accent);
+            border-radius: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            color: var(--accent);
+        }
+
+        .six-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+            margin-bottom: 80px;
+        }
+
+        @media (max-width: 992px) {
+            .six-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 600px) {
+            .six-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Card Styling */
+        .cosmic-card {
+            position: relative;
+            background: rgba(25, 22, 46, 0.6);
+            border: 1px solid rgba(138, 79, 255, 0.25);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .cosmic-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--accent);
+            box-shadow: 0 15px 35px rgba(138, 79, 255, 0.4), 0 0 25px rgba(0, 230, 204, 0.3);
+        }
+
+        .card-media {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            overflow: hidden;
+            background: rgba(15, 12, 29, 0.8);
+        }
+
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease, filter 0.4s ease;
+        }
+
+        .cosmic-card:hover .card-img {
+            transform: scale(1.08);
+        }
+
+        /* Sector Tag Badge on top of Card */
+        .card-sector-tag {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 6px 14px;
+            background: rgba(15, 12, 29, 0.85);
+            border: 1px solid rgba(0, 230, 204, 0.4);
+            border-radius: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            color: var(--accent);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 2;
+        }
+
+        .card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(15, 12, 29, 0.95) 0%, rgba(15, 12, 29, 0.4) 60%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+            z-index: 3;
+        }
+
+        .cosmic-card:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .card-overlay-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(138, 79, 255, 0.5);
+            transition: var(--transition);
+        }
+
+        .card-overlay-btn:hover {
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            color: var(--darker);
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        .card-info {
+            padding: 18px 20px;
+            background: rgba(25, 22, 46, 0.8);
+            border-top: 1px solid rgba(138, 79, 255, 0.15);
+        }
+
+        .card-service-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ── Shimmer Placeholder ─────────────────────────────────────── */
+        .card-shimmer {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(25,22,46,0.6) 0%, rgba(138,79,255,0.15) 50%, rgba(25,22,46,0.6) 100%);
+            background-size: 200% 100%;
+            animation: shimmer-anim 1.8s infinite;
+        }
+
+        @keyframes shimmer-anim {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* ── LIGHTBOX ────────────────────────────────────────────────── */
+        .pf-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(9, 7, 20, 0.95);
+            backdrop-filter: blur(16px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .pf-lightbox.open {
+            display: flex;
+        }
+
+        .pf-lightbox-img {
+            max-width: 90vw;
+            max-height: 80vh;
+            border-radius: 12px;
+            box-shadow: 0 0 50px rgba(138, 79, 255, 0.5);
+            border: 1px solid rgba(138, 79, 255, 0.3);
+            object-fit: contain;
+        }
+
+        .pf-lightbox-close {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(138, 79, 255, 0.2);
+            border: 1px solid rgba(138, 79, 255, 0.4);
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .pf-lightbox-close:hover {
+            background: var(--secondary);
+            transform: rotate(90deg);
+        }
+
+        .pf-lightbox-caption {
+            margin-top: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            color: var(--accent);
+        }
+
+        /* ── Footer ─────────────────────────────────────────────────── */
+        footer {
+            background: rgba(9, 7, 20, 0.95);
+            padding: 40px 0 20px;
+            border-top: 1px solid rgba(138, 79, 255, 0.15);
+            text-align: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .pf-title { font-size: 2.5rem; }
+            .nav-links { display: none; }
+            .mobile-toggle { display: block; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="particles-js"></div>
+
+    <!-- ===== HEADER NAVBAR ===== -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-meteor"></i> SEVEN'S
+                </a>
+                <ul class="nav-links">
+                    <li><a href="index.html#home">Home</a></li>
+                    <li><a href="index.html#services">Services</a></li>
+                    <li><a href="portfolio.html" class="active">Portfolio</a></li>
+                    <li><a href="index.html#testimonials">Testimonials</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+                <div class="mobile-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- ===== PORTFOLIO HERO ===== -->
+        <section class="pf-hero">
+            <div class="pf-hero-badge">
+                <i class="fas fa-sparkles"></i> DYNAMIC COSMIC GALLERY
+            </div>
+            <h1 class="pf-title">Our Creative Galaxy</h1>
+            <p class="pf-subtitle">
+                Explore 6 featured masterpieces chosen dynamically from each of our core creative dimensions.
+                Every refresh brings a brand-new selection from our vault.
+            </p>
+
+            <button class="shuffle-control" id="shuffleBtn">
+                <i class="fas fa-dice"></i> REROLL CREATIVE GALAXY
+            </button>
+        </section>
+
+        <!-- ===== ULTRA-SIMPLE SERVICE SELECTOR ===== -->
+        <section class="space-selector-section">
+            <div class="space-pods-grid">
+                <button class="space-pod active" data-service="all">All Sectors</button>
+                <button class="space-pod" data-service="graphic-design">Galaxy Design</button>
+                <button class="space-pod" data-service="app-development">Cosmic App Dev</button>
+                <button class="space-pod" data-service="web-development">Interstellar Web</button>
+                <button class="space-pod" data-service="video-editing">Universal Video</button>
+                <button class="space-pod" data-service="vfx-graphics">Nebula VFX</button>
+                <button class="space-pod" data-service="3d-animation">Universe Animation</button>
+            </div>
+        </section>
+
+        <!-- ===== 6 FEATURED SHOWCASE GRID ===== -->
+        <section>
+            <div class="showcase-header">
+                <div class="showcase-title-wrap">
+                    <h3>Featured Artwork Array</h3>
+                    <div class="showcase-count-badge" id="activeFilterBadge">SHOWING ALL 6 SERVICES</div>
+                </div>
+            </div>
+
+            <div class="six-grid" id="sixGrid">
+                <!-- 6 Dynamic Cards rendered by JavaScript -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== LIGHTBOX ===== -->
+    <div class="pf-lightbox" id="lightbox">
+        <button class="pf-lightbox-close" id="lightboxClose"><i class="fas fa-times"></i></button>
+        <img class="pf-lightbox-img" id="lightboxImg" src="" alt="Artwork">
+        <div class="pf-lightbox-caption" id="lightboxCaption"></div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 SEVEN'S STUDIOS. All rights reserved. <a href="index.html">Back to Home</a></p>
+        </div>
+    </footer>
+
+    <!-- ===== SCRIPT LOGIC ===== -->
+    <script>
+    (function () {
+        'use strict';
+
+        // 6 Core Services Configuration
+        const SERVICES = [
+            {
+                id: 'graphic-design',
+                name: 'Galaxy Design',
+                icon: 'fas fa-palette',
+                manifest: 'portfolio/graphic-design/manifest.json',
+                defaults: [
+                    'portfolio/graphic-design/logos/BARBERNATION.png',
+                    'portfolio/graphic-design/posters/Porsche-Poster.png',
+                    'portfolio/graphic-design/mockups/1.png',
+                    'portfolio/graphic-design/posters/Nike_Shoes2.png',
+                    'portfolio/graphic-design/logos/MinMini.png',
+                    'portfolio/graphic-design/posters/Burgerman-Final.png',
+                    'portfolio/graphic-design/mockups/2.png'
+                ]
+            },
+            {
+                id: 'app-development',
+                name: 'Cosmic App Dev',
+                icon: 'fas fa-mobile-alt',
+                manifest: 'portfolio/app-development/manifest.json',
+                defaults: [
+                    'portfolio/graphic-design/logos/Locate-2-1.png',
+                    'portfolio/graphic-design/logos/ba91964d-01.png',
+                    'portfolio/graphic-design/logos/Phoenix-1.png'
+                ]
+            },
+            {
+                id: 'web-development',
+                name: 'Interstellar Web',
+                icon: 'fas fa-laptop-code',
+                manifest: 'portfolio/web-development/manifest.json',
+                defaults: [
+                    'portfolio/graphic-design/logos/Saphire-1.png',
+                    'portfolio/graphic-design/logos/8b121a5c-02.png',
+                    'portfolio/graphic-design/logos/Vues-1.png'
+                ]
+            },
+            {
+                id: 'video-editing',
+                name: 'Universal Video',
+                icon: 'fas fa-video',
+                manifest: 'portfolio/video-editing/manifest.json',
+                defaults: [
+                    'portfolio/graphic-design/logos/Payback_Arena-1.png',
+                    'portfolio/graphic-design/logos/Waves-1.png',
+                    'portfolio/graphic-design/logos/Music-1.png'
+                ]
+            },
+            {
+                id: 'vfx-graphics',
+                name: 'Nebula VFX',
+                icon: 'fas fa-magic',
+                manifest: 'portfolio/vfx-graphics/manifest.json',
+                defaults: [
+                    'portfolio/graphic-design/logos/Atomic_Clocks-1.png',
+                    'portfolio/graphic-design/logos/Ambient_Paints.png',
+                    'portfolio/graphic-design/posters/Headphones.png'
+                ]
+            },
+            {
+                id: '3d-animation',
+                name: 'Universe Animation',
+                icon: 'fas fa-cube',
+                manifest: 'portfolio/3d-animation/manifest.json',
+                defaults: [
+                    'portfolio/3d-animation/COKE_AD1.png',
+                    'portfolio/3d-animation/COKE_AD2.png',
+                    'portfolio/3d-animation/Void-Station-Poster.png',
+                    'portfolio/3d-animation/COKE_AD3.png',
+                    'portfolio/3d-animation/Void_Station_Poster_2.png'
+                ]
+            }
+        ];
+
+        let selectedArtworkMap = {}; // serviceId -> imageSrc
+        let currentFilter = 'all';
+
+        // Helper: pick random item from array
+        function getRandom(arr) {
+            if (!arr || arr.length === 0) return '';
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        // Fetch manifest for a service with fallback
+        async function fetchServiceImages(service) {
+            try {
+                const res = await fetch(service.manifest);
+                if (res.ok) {
+                    const list = await res.json();
+                    if (Array.isArray(list) && list.length > 0) {
+                        return list.map(item => item.startsWith('portfolio/') ? item : `portfolio/${service.id}/${item}`);
+                    }
+                }
+            } catch (err) {
+                // Ignore fetch error, use fallback array
+            }
+            return service.defaults;
+        }
+
+        // Load 1 random photo for each of the 6 services
+        async function loadFeatured6() {
+            const grid = document.getElementById('sixGrid');
+            grid.innerHTML = '';
+
+            // Render 6 Shimmer Placeholders
+            SERVICES.forEach(s => {
+                const card = document.createElement('div');
+                card.className = 'cosmic-card';
+                card.innerHTML = `
+                    <div class="card-media">
+                        <div class="card-shimmer"></div>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-service-name"><i class="${s.icon}"></i> ${s.name}</div>
+                        <div class="card-title">Scanning Vault...</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            // Fetch images for each service & select 1 random
+            const fetchPromises = SERVICES.map(async (service) => {
+                const images = await fetchServiceImages(service);
+                const randomImg = getRandom(images);
+                selectedArtworkMap[service.id] = {
+                    src: randomImg,
+                    service: service
+                };
+            });
+
+            await Promise.all(fetchPromises);
+            renderGrid();
+        }
+
+        // Render Cards according to activeFilter
+        function renderGrid() {
+            const grid = document.getElementById('sixGrid');
+            grid.innerHTML = '';
+
+            const servicesToDisplay = currentFilter === 'all'
+                ? SERVICES
+                : SERVICES.filter(s => s.id === currentFilter);
+
+            servicesToDisplay.forEach(service => {
+                const item = selectedArtworkMap[service.id];
+                if (!item || !item.src) return;
+
+                const card = document.createElement('div');
+                card.className = 'cosmic-card';
+                card.dataset.service = service.id;
+
+                const filename = item.src.split('/').pop().replace(/\.[^/.]+$/, "");
+                const formattedTitle = filename.replace(/[-_]/g, " ");
+
+                card.innerHTML = `
+                    <div class="card-media">
+                        <div class="card-sector-tag">
+                            <i class="${service.icon}"></i> ${service.name}
+                        </div>
+                        <img class="card-img" src="${item.src}" alt="${formattedTitle}" loading="lazy">
+                        <div class="card-overlay">
+                            <button class="card-overlay-btn">
+                                <i class="fas fa-expand"></i> EXPAND ARTWORK
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-service-name">${service.name}</div>
+                        <div class="card-title">${formattedTitle}</div>
+                    </div>
+                `;
+
+                // Add Click Handler for Lightbox
+                card.addEventListener('click', () => {
+                    openLightbox(item.src, `${service.name} - ${formattedTitle}`);
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Space Pod Selectors Handler
+        document.querySelectorAll('.space-pod').forEach(pod => {
+            pod.addEventListener('click', (e) => {
+                if (e.target.closest('.space-pod-link')) return;
+
+                document.querySelectorAll('.space-pod').forEach(p => p.classList.remove('active'));
+                pod.classList.add('active');
+
+                currentFilter = pod.dataset.service;
+                const badge = document.getElementById('activeFilterBadge');
+                if (currentFilter === 'all') {
+                    badge.textContent = 'SHOWING ALL 6 SERVICES';
+                } else {
+                    const serviceObj = SERVICES.find(s => s.id === currentFilter);
+                    badge.textContent = `FILTERED: ${serviceObj ? serviceObj.name.toUpperCase() : currentFilter}`;
+                }
+
+                renderGrid();
+            });
+        });
+
+        // Reroll / Shuffle Button
+        document.getElementById('shuffleBtn').addEventListener('click', () => {
+            loadFeatured6();
+        });
+
+        // Lightbox Functions
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+
+        function openLightbox(src, caption) {
+            lightboxImg.src = src;
+            lightboxCaption.textContent = caption;
+            lightbox.classList.add('open');
+        }
+
+        document.getElementById('lightboxClose').addEventListener('click', () => {
+            lightbox.classList.remove('open');
+        });
+
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) lightbox.classList.remove('open');
+        });
+
+        // Initialize Particles
+        if (typeof particlesJS !== 'undefined') {
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 120, density: { enable: true, value_area: 800 } },
+                    color: { value: "#ffffff" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 2, random: true },
+                    line_linked: { enable: true, distance: 140, color: "#8a4fff", opacity: 0.15, width: 1 },
+                    move: { enable: true, speed: 1, direction: "none", random: true }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: { onhover: { enable: true, mode: "repulse" }, resize: true }
+                },
+                retina_detect: true
+            });
+        }
+
+        // Initial Load on Page Ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadFeatured6);
+        } else {
+            loadFeatured6();
+        }
+
+    })();
+    </script>
+</body>
+
+</html>
