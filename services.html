@@ -402,38 +402,170 @@
 
         /* ── FOOTER ─────────────────────────────────────────── */
         footer {
-            background: rgba(5,4,12,0.95); border-top: 1px solid rgba(255,255,255,0.06);
-            padding: 60px 0 30px; position: relative; z-index: 2;
+            background: rgba(9, 7, 20, 0.9);
+            padding: 80px 0 30px;
+            border-top: 1px solid rgba(138, 79, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
         }
-        .footer-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px;
-            margin-bottom: 40px;
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+            position: relative;
+            z-index: 2;
         }
-        .footer-col h3 {
-            font-family: 'Orbitron', sans-serif; font-size: 15px; color: #fff; margin-bottom: 20px;
-            letter-spacing: 1px;
+
+        .footer-column h3 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 15px;
+            font-family: 'Playfair Display', serif;
+            color: #fff;
         }
-        .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 10px; }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .footer-column img {
+            top: 20%;
+            width: 50%;
+            height: auto;
+            margin-top: 15px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 15px;
+        }
+
         .footer-links a {
-            color: var(--gray); text-decoration: none; font-size: 14px; transition: color 0.2s;
-            display: inline-flex; align-items: center; gap: 8px;
+            color: var(--gray);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
         }
-        .footer-links a:hover { color: var(--accent); }
+
+        .footer-links a i {
+            margin-right: 10px;
+            color: var(--accent);
+            font-size: 12px;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: rgba(138, 79, 255, 0.1);
+            border-radius: 12px;
+            color: var(--accent);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+            color: white;
+        }
+
         .footer-bottom {
-            text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05);
-            font-size: 13px; color: var(--gray);
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(138, 79, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-form {
+            margin-top: 15px;
+        }
+
+        .footer-form .form-group {
+            display: flex;
+            position: relative;
+        }
+
+        .footer-form .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(18, 14, 38, 0.6);
+            border: 1px solid rgba(138, 79, 255, 0.3);
+            border-radius: 10px;
+            color: #f0f0ff;
+            font-size: 14px;
+        }
+
+        .footer-form button {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            bottom: 5px;
+            padding: 0 15px;
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .footer-form button:hover {
+            background: var(--accent);
+            color: #090714;
         }
 
         /* ── RESPONSIVE ─────────────────────────────────────── */
         @media (max-width: 768px) {
             .mobile-toggle { display: flex; }
             .nav-links {
-                display: none; position: absolute; top: 100%; left: 0; width: 100%;
-                background: rgba(9,7,20,0.96); backdrop-filter: blur(20px);
-                flex-direction: column; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: rgba(15, 12, 29, 0.95);
+                flex-direction: column;
+                align-items: center;
+                padding: 30px 0;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                transform: translateY(-150%);
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+                display: flex;
             }
-            .nav-links.show { display: flex; }
+            .nav-links.active { transform: translateY(0); }
+            .nav-links li { margin: 15px 0; }
             .service-block { padding: 30px 20px; }
             .service-header { flex-direction: column; align-items: flex-start; }
             .service-block-name { font-size: 24px; }
@@ -454,16 +586,16 @@
         <div class="container">
             <nav class="navbar">
                 <a href="index.html#home" class="logo">
-                    <i class="fas fa-meteor"></i> SEVEN'S STUDIOS
+                    SEVEN'S
                 </a>
-                <ul class="nav-links" id="nav-menu">
+                <ul class="nav-links">
                     <li><a href="index.html#home">Home</a></li>
                     <li><a href="services.html" class="active">Services</a></li>
                     <li><a href="portfolio.html">Portfolio</a></li>
                     <li><a href="index.html#testimonials">Testimonials</a></li>
                     <li><a href="index.html#contact">Contact</a></li>
                 </ul>
-                <div class="mobile-toggle" id="mobile-toggle">
+                <div class="mobile-toggle">
                     <i class="fas fa-bars"></i>
                 </div>
             </nav>
@@ -1086,17 +1218,22 @@
     <!-- FOOTER -->
     <footer>
         <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <a href="index.html#home" class="logo" style="margin-bottom: 16px;">
-                        <i class="fas fa-meteor"></i> SEVEN'S STUDIOS
-                    </a>
-                    <p style="font-size: 13.5px; color: var(--gray); line-height: 1.7; margin-bottom: 20px;">
-                        Crafting cosmic digital experiences that captivate, inspire, and transform brands worldwide.
-                    </p>
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>SEVEN'S</h3>
+                    <p>Transforming visions into cosmic digital experiences by blending innovation, creativity, and technical excellence.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/sevens__studios?igsh=NjM0b3M2Y2VsNnhh" target="_blank" rel="noopener"><i
+                                class="fab fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/share/16ZVUCbBjR/" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://x.com/SEVENS_STUDIOS?t=yWi266ypjMMNjPtiTRb6mA&s=09" target="_blank" rel="noopener"><i
+                                class="fab fa-twitter"></i></a>
+                        <a
+                            href="https://www.linkedin.com/in/seven-s-studios-29b815372?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener"><i
+                                class="fab fa-linkedin-in"></i></a>
+                    </div>
                 </div>
-
-                <div class="footer-col">
+                <div class="footer-column">
                     <h3>Quick Links</h3>
                     <ul class="footer-links">
                         <li><a href="index.html#home"><i class="fas fa-chevron-right"></i> Home</a></li>
@@ -1106,8 +1243,7 @@
                         <li><a href="index.html#contact"><i class="fas fa-chevron-right"></i> Contact</a></li>
                     </ul>
                 </div>
-
-                <div class="footer-col">
+                <div class="footer-column">
                     <h3>Services</h3>
                     <ul class="footer-links">
                         <li><a href="services.html#galaxy-design"><i class="fas fa-chevron-right"></i> Galaxy Design</a></li>
@@ -1118,16 +1254,24 @@
                         <li><a href="services.html#universe-animation"><i class="fas fa-chevron-right"></i> Universe Animation</a></li>
                     </ul>
                 </div>
-
-                <div class="footer-col">
-                    <h3>Get In Touch</h3>
-                    <p style="font-size: 13.5px; color: var(--gray); margin-bottom: 10px;"><i class="fas fa-envelope" style="color: var(--accent);"></i> contact@sevensstudios.com</p>
-                    <p style="font-size: 13.5px; color: var(--gray); margin-bottom: 16px;"><i class="fas fa-globe" style="color: var(--accent);"></i> www.sevensstudios.com</p>
+                <div class="footer-column">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to receive cosmic insights and updates.</p>
+                    <form id="newsletterForm" class="footer-form">
+                        <div id="newsletterNotification" class="notification"></div>
+                        <div class="form-group">
+                            <input type="email" id="newsletterEmail" placeholder="Your Email" class="form-control"
+                                style="color: #f0f0ff;">
+                            <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </form>
+                    <img src="icon.png" alt="Icon">
+                    <img class="img2" src="SEVEN.png" alt="SEVEN">
                 </div>
             </div>
-
             <div class="footer-bottom">
-                <p>&copy; 2026 SEVEN'S STUDIOS. All Rights Reserved. Crafted with passion & cosmic energy.</p>
+                <p>&copy; 2025 SEVEN'S studios. All rights reserved. Designed with <i class="fas fa-heart"
+                        style="color: var(--accent);"></i></p>
             </div>
         </div>
     </footer>
@@ -1136,11 +1280,41 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Mobile Menu Toggle
-            const mobileToggle = document.getElementById('mobile-toggle');
-            const navMenu = document.getElementById('nav-menu');
-            if (mobileToggle && navMenu) {
+            const mobileToggle = document.querySelector('.mobile-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            if (mobileToggle && navLinks) {
                 mobileToggle.addEventListener('click', () => {
-                    navMenu.classList.toggle('show');
+                    navLinks.classList.toggle('active');
+                });
+            }
+
+            // Newsletter WhatsApp Handler
+            const newsletterForm = document.getElementById('newsletterForm');
+            const newsletterNotification = document.getElementById('newsletterNotification');
+            if (newsletterForm) {
+                newsletterForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const email = document.getElementById('newsletterEmail').value.trim();
+                    const receiver = '9344304597';
+                    if (!email) {
+                        if (newsletterNotification) {
+                            newsletterNotification.textContent = 'Please enter your email';
+                            newsletterNotification.style.color = '#ff4f9a';
+                            newsletterNotification.style.display = 'block';
+                        }
+                        return;
+                    }
+                    const fullMessage = `Hello, I would like to subscribe with the following email:\n${email}`;
+                    const encodedMessage = encodeURIComponent(fullMessage);
+                    const whatsappDesktopUrl = `whatsapp://send?phone=${receiver}&text=${encodedMessage}`;
+                    const whatsappWebUrl = `https://web.whatsapp.com/send?phone=${receiver}&text=${encodedMessage}`;
+                    if (newsletterNotification) {
+                        newsletterNotification.textContent = 'Trying to open WhatsApp...';
+                        newsletterNotification.style.color = '#00e6cc';
+                        newsletterNotification.style.display = 'block';
+                    }
+                    window.location.href = whatsappDesktopUrl;
+                    setTimeout(() => { window.open(whatsappWebUrl, '_blank'); }, 2000);
                 });
             }
 

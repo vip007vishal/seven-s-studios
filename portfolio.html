@@ -465,26 +465,171 @@
         .lb-prev { left:-70px; }
         .lb-next { right:-70px; }
 
-        /* ── FOOTER ──────────────────────────────────────────── */
+        /* ── FOOTER ─────────────────────────────────────────── */
         footer {
-            background:rgba(5,4,14,0.99); padding:36px 0 20px;
-            border-top:1px solid rgba(255,255,255,0.05);
-            text-align:center; color:rgba(160,160,192,0.4); font-size:13px;
-            position:relative; z-index:2;
+            background: rgba(9, 7, 20, 0.9);
+            padding: 80px 0 30px;
+            border-top: 1px solid rgba(138, 79, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
         }
-        footer a { color:rgba(0,230,204,0.65); text-decoration:none; transition:color 0.2s; }
-        footer a:hover { color:var(--accent); }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-column h3 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 15px;
+            font-family: 'Playfair Display', serif;
+            color: #fff;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .footer-column img {
+            top: 20%;
+            width: 50%;
+            height: auto;
+            margin-top: 15px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-links a i {
+            margin-right: 10px;
+            color: var(--accent);
+            font-size: 12px;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: rgba(138, 79, 255, 0.1);
+            border-radius: 12px;
+            color: var(--accent);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(138, 79, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-form {
+            margin-top: 15px;
+        }
+
+        .footer-form .form-group {
+            display: flex;
+            position: relative;
+        }
+
+        .footer-form .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(18, 14, 38, 0.6);
+            border: 1px solid rgba(138, 79, 255, 0.3);
+            border-radius: 10px;
+            color: #f0f0ff;
+            font-size: 14px;
+        }
+
+        .footer-form button {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            bottom: 5px;
+            padding: 0 15px;
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .footer-form button:hover {
+            background: var(--accent);
+            color: #090714;
+        }
 
         /* ── RESPONSIVE ──────────────────────────────────────── */
         @media (max-width:768px) {
             .pf-title { font-size:2.2rem; letter-spacing:-1px; }
             .nav-links {
-                display:none; position:fixed; top:62px; left:0; width:100%;
-                background:rgba(7,5,18,0.98); flex-direction:column; align-items:center;
-                padding:26px 0; z-index:999; gap:4px;
-                border-bottom:1px solid rgba(138,79,255,0.12);
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: rgba(15, 12, 29, 0.95);
+                flex-direction: column;
+                align-items: center;
+                padding: 30px 0;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                transform: translateY(-150%);
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+                display: flex;
             }
-            .nav-links.open { display:flex; }
+            .nav-links.active { transform: translateY(0); }
             .mobile-toggle { display:flex; }
             .lb-prev { left:-5px; }
             .lb-next { right:-5px; }
@@ -508,19 +653,19 @@
     <header>
         <div class="container">
             <nav class="navbar">
-                <a href="index.html" class="logo">
-                    <i class="fas fa-meteor"></i> SEVEN'S
+                <a href="index.html#home" class="logo">
+                    SEVEN'S
                 </a>
-                <ul class="nav-links" id="navLinks">
+                <ul class="nav-links">
                     <li><a href="index.html#home">Home</a></li>
                     <li><a href="services.html">Services</a></li>
                     <li><a href="portfolio.html" class="active">Portfolio</a></li>
                     <li><a href="index.html#testimonials">Testimonials</a></li>
                     <li><a href="index.html#contact">Contact</a></li>
                 </ul>
-                <button class="mobile-toggle" id="menuToggle" aria-label="Menu">
+                <div class="mobile-toggle">
                     <i class="fas fa-bars"></i>
-                </button>
+                </div>
             </nav>
         </div>
     </header>
@@ -695,7 +840,61 @@
     <!-- FOOTER -->
     <footer>
         <div class="container">
-            <p>&copy; 2026 SEVEN'S STUDIOS. All rights reserved. &nbsp;&bull;&nbsp; <a href="index.html">Back to Home</a></p>
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>SEVEN'S</h3>
+                    <p>Transforming visions into cosmic digital experiences by blending innovation, creativity, and technical excellence.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/sevens__studios?igsh=NjM0b3M2Y2VsNnhh" target="_blank" rel="noopener"><i
+                                class="fab fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/share/16ZVUCbBjR/" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://x.com/SEVENS_STUDIOS?t=yWi266ypjMMNjPtiTRb6mA&s=09" target="_blank" rel="noopener"><i
+                                class="fab fa-twitter"></i></a>
+                        <a
+                            href="https://www.linkedin.com/in/seven-s-studios-29b815372?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener"><i
+                                class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html#home"><i class="fas fa-chevron-right"></i> Home</a></li>
+                        <li><a href="services.html"><i class="fas fa-chevron-right"></i> Services</a></li>
+                        <li><a href="portfolio.html"><i class="fas fa-chevron-right"></i> Portfolio</a></li>
+                        <li><a href="index.html#testimonials"><i class="fas fa-chevron-right"></i> Testimonials</a></li>
+                        <li><a href="index.html#contact"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="services.html#galaxy-design"><i class="fas fa-chevron-right"></i> Galaxy Design</a></li>
+                        <li><a href="services.html#cosmic-app-dev"><i class="fas fa-chevron-right"></i> Cosmic App Dev</a></li>
+                        <li><a href="services.html#interstellar-web"><i class="fas fa-chevron-right"></i> Interstellar Web</a></li>
+                        <li><a href="services.html#universal-video"><i class="fas fa-chevron-right"></i> Universal Video</a></li>
+                        <li><a href="services.html#nebula-vfx"><i class="fas fa-chevron-right"></i> Nebula VFX</a></li>
+                        <li><a href="services.html#universe-animation"><i class="fas fa-chevron-right"></i> Universe Animation</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to receive cosmic insights and updates.</p>
+                    <form id="newsletterForm" class="footer-form">
+                        <div id="newsletterNotification" class="notification"></div>
+                        <div class="form-group">
+                            <input type="email" id="newsletterEmail" placeholder="Your Email" class="form-control"
+                                style="color: #f0f0ff;">
+                            <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </form>
+                    <img src="icon.png" alt="Icon">
+                    <img class="img2" src="SEVEN.png" alt="SEVEN">
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SEVEN'S studios. All rights reserved. Designed with <i class="fas fa-heart"
+                        style="color: var(--accent);"></i></p>
+            </div>
         </div>
     </footer>
 
@@ -956,10 +1155,44 @@
             });
         });
 
-        /* MOBILE MENU */
-        document.getElementById('menuToggle').addEventListener('click', function() {
-            document.getElementById('navLinks').classList.toggle('open');
-        });
+        /* MOBILE MENU & NEWSLETTER */
+        var mobileToggle = document.querySelector('.mobile-toggle');
+        var navLinks = document.querySelector('.nav-links');
+        if (mobileToggle && navLinks) {
+            mobileToggle.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+            });
+        }
+
+        var newsletterForm = document.getElementById('newsletterForm');
+        var newsletterNotification = document.getElementById('newsletterNotification');
+        if (newsletterForm) {
+            newsletterForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var emailInput = document.getElementById('newsletterEmail');
+                var email = emailInput ? emailInput.value.trim() : '';
+                var receiver = '9344304597';
+                if (!email) {
+                    if (newsletterNotification) {
+                        newsletterNotification.textContent = 'Please enter your email';
+                        newsletterNotification.style.color = '#ff4f9a';
+                        newsletterNotification.style.display = 'block';
+                    }
+                    return;
+                }
+                var fullMessage = 'Hello, I would like to subscribe with the following email:\n' + email;
+                var encodedMessage = encodeURIComponent(fullMessage);
+                var whatsappDesktopUrl = 'whatsapp://send?phone=' + receiver + '&text=' + encodedMessage;
+                var whatsappWebUrl = 'https://web.whatsapp.com/send?phone=' + receiver + '&text=' + encodedMessage;
+                if (newsletterNotification) {
+                    newsletterNotification.textContent = 'Trying to open WhatsApp...';
+                    newsletterNotification.style.color = '#00e6cc';
+                    newsletterNotification.style.display = 'block';
+                }
+                window.location.href = whatsappDesktopUrl;
+                setTimeout(function() { window.open(whatsappWebUrl, '_blank'); }, 2000);
+            });
+        }
 
         /* PARTICLES — deferred */
         setTimeout(function() {
