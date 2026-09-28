@@ -177,8 +177,6 @@
             border-color: var(--accent);
             box-shadow: 0 14px 35px rgba(138,79,255,0.35), 0 0 20px rgba(0,230,204,0.2);
         }
-        .img-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; display: block; }
-        .img-card:hover img { transform: scale(1.08); }
         .img-card-overlay {
             position: absolute; inset: 0;
             background: linear-gradient(to top, rgba(9,7,20,0.92) 0%, rgba(9,7,20,0.3) 50%, transparent 100%);
@@ -195,13 +193,28 @@
         }
         .img-card:hover .img-expand-btn { opacity: 1; }
 
-        /* Shimmer */
+        /* Shimmer — standalone card */
         .img-shimmer {
             aspect-ratio: 4/3;
             background: linear-gradient(90deg, rgba(25,22,46,0.6) 0%, rgba(138,79,255,0.12) 50%, rgba(25,22,46,0.6) 100%);
             background-size: 200% 100%; animation: shimmer 1.8s infinite;
             border-radius: 16px; border: 1px solid rgba(138,79,255,0.15);
         }
+        /* Shimmer inside img-card (before image loads via IntersectionObserver) */
+        .img-shimmer-inner {
+            position: absolute; inset: 0;
+            background: linear-gradient(90deg, rgba(25,22,46,0.7) 0%, rgba(138,79,255,0.14) 50%, rgba(25,22,46,0.7) 100%);
+            background-size: 200% 100%; animation: shimmer 1.8s infinite;
+        }
+        /* Once image loads, card gets .loaded class — ensure img fills the card */
+        .img-card img {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.5s ease;
+            display: block;
+        }
+        .img-card:hover img { transform: scale(1.08); }
+        #lb-img { transition: opacity 0.3s ease; }
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
         /* Empty state */
@@ -442,6 +455,18 @@
     (function () {
         'use strict';
 
+        /*
+         * PERFORMANCE STRATEGY:
+         *  1. Grid uses _thumbs/*.jpg — tiny compressed JPEGs (avg ~30KB vs ~900KB original)
+         *  2. IntersectionObserver: images only start loading when near viewport
+         *  3. Chunked rendering: render 24 cards at a time, append more on scroll (infinite-scroll)
+         *  4. Lightbox uses full-res originals — only fetched on demand when user clicks
+         *  5. particles.js deferred until after first paint
+         */
+
+        var THUMB_SUFFIX = '_thumbs'; // sub-folder holding compressed thumbnails
+        var CHUNK_SIZE   = 24;        // cards rendered per batch
+
         /* ── MANIFEST DATA ─────────────────────────────────────────── */
         var GD_SUBS = [
             { id: 'logos',   basePath: 'portfolio/graphic-design/logos/',   manifest: 'portfolio/graphic-design/logos/manifest.json' },
@@ -457,52 +482,102 @@
             { id: 'vfx-graphics',    basePath: 'portfolio/vfx-graphics/',    manifest: 'portfolio/vfx-graphics/manifest.json' }
         ];
 
-        /* ── LIGHTBOX ──────────────────────────────────────────────── */
-        var lbImages = [];
-        var lbIndex  = 0;
-        var lightbox = document.getElementById('lightbox');
-        var lbImg    = document.getElementById('lb-img');
-        var lbCaption= document.getElementById('lb-caption');
-
-        function openLightbox(images, index) {
-            lbImages = images;
-            lbIndex  = index;
-            updateLbImage();
-            lightbox.classList.add('open');
+        /* ── THUMBNAIL PATH HELPER ──────────────────────────────────── */
+        // Convert  portfolio/foo/bar/image.png  ->  portfolio/foo/bar/_thumbs/image.jpg
+        function toThumb(fullSrc) {
+            var parts = fullSrc.split('/');
+            var file  = parts.pop();
+            var stem  = file.replace(/\.[^.]+$/, '');
+            return parts.join('/') + '/' + THUMB_SUFFIX + '/' + stem + '.jpg';
         }
 
-        function updateLbImage() {
-            lbImg.src = lbImages[lbIndex];
-            var name = lbImages[lbIndex].split('/').pop().replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+        /* ── LIGHTBOX ──────────────────────────────────────────────── */
+        var lbFullImages = []; // full-res paths for lightbox
+        var lbIndex      = 0;
+        var lightbox     = document.getElementById('lightbox');
+        var lbImg        = document.getElementById('lb-img');
+        var lbCaption    = document.getElementById('lb-caption');
+        var lbLoader; // placeholder spinner
+
+        function openLightbox(fullImages, index) {
+            lbFullImages = fullImages;
+            lbIndex = index;
+            showLbImage();
+            lightbox.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function showLbImage() {
+            var src = lbFullImages[lbIndex];
+            lbImg.style.opacity = '0';
+            lbImg.onload = function() { lbImg.style.opacity = '1'; };
+            lbImg.src = src;
+            var name = src.split('/').pop().replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
             lbCaption.textContent = name;
         }
 
-        document.getElementById('lbClose').addEventListener('click', function() { lightbox.classList.remove('open'); });
-        lightbox.addEventListener('click', function(e) { if (e.target === lightbox) lightbox.classList.remove('open'); });
+        function closeLightbox() {
+            lightbox.classList.remove('open');
+            document.body.style.overflow = '';
+            lbImg.src = '';
+        }
+
+        document.getElementById('lbClose').addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', function(e) { if (e.target === lightbox) closeLightbox(); });
 
         document.getElementById('lbPrev').addEventListener('click', function(e) {
             e.stopPropagation();
-            lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length;
-            updateLbImage();
+            lbIndex = (lbIndex - 1 + lbFullImages.length) % lbFullImages.length;
+            showLbImage();
         });
         document.getElementById('lbNext').addEventListener('click', function(e) {
             e.stopPropagation();
-            lbIndex = (lbIndex + 1) % lbImages.length;
-            updateLbImage();
+            lbIndex = (lbIndex + 1) % lbFullImages.length;
+            showLbImage();
         });
         document.addEventListener('keydown', function(e) {
             if (!lightbox.classList.contains('open')) return;
-            if (e.key === 'Escape')      { lightbox.classList.remove('open'); }
-            if (e.key === 'ArrowLeft')   { lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length; updateLbImage(); }
-            if (e.key === 'ArrowRight')  { lbIndex = (lbIndex + 1) % lbImages.length; updateLbImage(); }
+            if (e.key === 'Escape')     closeLightbox();
+            if (e.key === 'ArrowLeft')  { lbIndex = (lbIndex - 1 + lbFullImages.length) % lbFullImages.length; showLbImage(); }
+            if (e.key === 'ArrowRight') { lbIndex = (lbIndex + 1) % lbFullImages.length; showLbImage(); }
         });
 
-        /* ── RENDER GRID ───────────────────────────────────────────── */
-        function renderGrid(gridId, images) {
+        /* ── INTERSECTION OBSERVER (shared) ─────────────────────────── */
+        var imgObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (!entry.isIntersecting) return;
+                var card = entry.target;
+                var thumb = card.dataset.thumb;
+                var name  = card.dataset.name;
+                if (!thumb) return;
+
+                var img = document.createElement('img');
+                img.alt = name;
+                img.decoding = 'async';
+                // fade-in on load
+                img.style.opacity = '0';
+                img.style.transition = 'opacity 0.35s ease';
+                img.onload  = function() { img.style.opacity = '1'; card.classList.add('loaded'); };
+                img.onerror = function() { img.style.opacity = '1'; };
+                img.src = thumb;
+
+                // Replace shimmer child with real img
+                var shimChild = card.querySelector('.img-shimmer-inner');
+                if (shimChild) card.replaceChild(img, shimChild);
+                else card.prepend(img);
+
+                imgObserver.unobserve(card);
+            });
+        }, { rootMargin: '200px 0px' }); // start loading 200px before entering view
+
+        /* ── RENDER GRID (chunked + observer) ─────────────────────── */
+        function renderGrid(gridId, fullImages) {
             var grid = document.getElementById(gridId);
             if (!grid) return;
 
-            if (!images || images.length === 0) {
+            grid.innerHTML = '';
+
+            if (!fullImages || fullImages.length === 0) {
                 grid.innerHTML =
                     '<div class="empty-state">' +
                     '<i class="fas fa-rocket"></i>' +
@@ -512,48 +587,62 @@
                 return;
             }
 
-            // Shimmer placeholders
-            var shimHTML = '';
-            for (var s = 0; s < images.length; s++) shimHTML += '<div class="img-shimmer"></div>';
-            grid.innerHTML = shimHTML;
+            var srcs = fullImages.slice();
+            var rendered = 0;
 
-            var allSrcs = images.slice();
-
-            function loadImg(i) {
-                if (i >= allSrcs.length) return;
-                var src = allSrcs[i];
-                var img = new Image();
-
-                (function(idx, imgSrc) {
-                    function replace() {
-                        var shimmer = grid.children[idx];
-                        if (!shimmer) return;
+            function appendChunk() {
+                var end = Math.min(rendered + CHUNK_SIZE, srcs.length);
+                for (var i = rendered; i < end; i++) {
+                    (function(idx) {
+                        var fullSrc   = srcs[idx];
+                        var thumbSrc  = toThumb(fullSrc);
+                        var rawName   = fullSrc.split('/').pop().replace(/\.[^.]+$/, '');
+                        var name      = rawName.replace(/[-_]/g, ' ');
 
                         var card = document.createElement('div');
                         card.className = 'img-card';
-                        card.style.animationDelay = (idx * 25) + 'ms';
+                        card.dataset.thumb = thumbSrc;
+                        card.dataset.full  = fullSrc;
+                        card.dataset.name  = name;
+                        card.style.animationDelay = ((idx % CHUNK_SIZE) * 30) + 'ms';
 
-                        var name = imgSrc.split('/').pop().replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
                         card.innerHTML =
-                            '<img src="' + imgSrc + '" alt="' + name + '" loading="lazy">' +
+                            '<div class="img-shimmer-inner"></div>' +
                             '<div class="img-card-overlay"><span class="img-card-name">' + name + '</span></div>' +
-                            '<button class="img-expand-btn"><i class="fas fa-expand-alt"></i></button>';
+                            '<button class="img-expand-btn" aria-label="Expand"><i class="fas fa-expand-alt"></i></button>';
 
-                        card.addEventListener('click', function() { openLightbox(allSrcs, idx); });
-                        grid.replaceChild(card, shimmer);
-
-                        loadImg(idx + 1);
-                    }
-                    img.onload = replace;
-                    img.onerror = replace;
-                })(i, src);
-
-                img.src = src;
+                        card.addEventListener('click', function() { openLightbox(srcs, idx); });
+                        grid.appendChild(card);
+                        imgObserver.observe(card);
+                    })(i);
+                }
+                rendered = end;
             }
 
-            // Load images — first 6 in parallel, rest sequential
-            var initBatch = Math.min(6, allSrcs.length);
-            for (var b = 0; b < initBatch; b++) loadImg(b);
+            // First chunk immediately
+            appendChunk();
+
+            // Sentinel div: when it enters view, append next chunk
+            function addSentinel() {
+                if (rendered >= srcs.length) return;
+                var sentinel = document.createElement('div');
+                sentinel.className = 'load-sentinel';
+                sentinel.style.cssText = 'height:1px;grid-column:1/-1;';
+                grid.appendChild(sentinel);
+
+                var sentinelObs = new IntersectionObserver(function(entries) {
+                    if (entries[0].isIntersecting) {
+                        sentinelObs.disconnect();
+                        grid.removeChild(sentinel);
+                        appendChunk();
+                        addSentinel(); // set up next sentinel
+                    }
+                }, { rootMargin: '300px 0px' });
+
+                sentinelObs.observe(sentinel);
+            }
+
+            addSentinel();
         }
 
         /* ── FETCH MANIFEST ────────────────────────────────────────── */
@@ -648,16 +737,16 @@
             document.getElementById('navLinks').classList.toggle('open');
         });
 
-        /* ── PARTICLES ────────────────────────────────────────────── */
-        window.addEventListener('load', function() {
+        /* ── PARTICLES (deferred — runs after first paint) ────────── */
+        setTimeout(function() {
             if (typeof particlesJS !== 'undefined') {
                 particlesJS('particles-js', {
                     particles: {
-                        number: { value: 70, density: { enable: true, value_area: 900 } },
+                        number: { value: 60, density: { enable: true, value_area: 900 } },
                         color: { value: '#ffffff' }, shape: { type: 'circle' },
-                        opacity: { value: 0.3, random: true }, size: { value: 1.6, random: true },
-                        line_linked: { enable: true, distance: 130, color: '#8a4fff', opacity: 0.1, width: 1 },
-                        move: { enable: true, speed: 0.7, direction: 'none', random: true }
+                        opacity: { value: 0.25, random: true }, size: { value: 1.5, random: true },
+                        line_linked: { enable: true, distance: 130, color: '#8a4fff', opacity: 0.09, width: 1 },
+                        move: { enable: true, speed: 0.6, direction: 'none', random: true }
                     },
                     interactivity: {
                         detect_on: 'canvas',
@@ -666,7 +755,7 @@
                     retina_detect: true
                 });
             }
-        });
+        }, 800); // delay particles until gallery has loaded
 
         /* ── INIT ─────────────────────────────────────────────────── */
         loadGdSub('logos');
